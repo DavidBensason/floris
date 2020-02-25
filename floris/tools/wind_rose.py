@@ -211,7 +211,7 @@ class WindRose():
         # Update internal data frame
         self.df = self.resample_wind_direction(self.df, wd)
 
-def resample_column(self, df, col, bins):
+    def resample_column(self, df, col, bins):
         """
         Modify the default bins for sorting the specified variable.
 
@@ -391,7 +391,7 @@ def resample_column(self, df, col, bins):
         #TODO is there a reason self.df is updated AND returned?
         return self.df
 
-def make_wind_rose_from_user_data(self,
+    def make_wind_rose_from_user_data(self,
                                       wd_raw,
                                       ws_raw,
                                       *args,
