@@ -33,6 +33,7 @@ Examples:
 """
 
 from . import cut_plane
+from . import energy_ratio_single
 from . import energy_ratio
 from . import floris_interface
 from . import flow_data
@@ -44,3 +45,4 @@ from . import rews
 from . import sowfa_utilities
 from . import visualization
 from . import wind_rose
+from . import interface_utilities

@@ -14,6 +14,7 @@ from .wake import Wake
 from .farm import Farm
 import pickle
 from .input_reader import InputReader
+from ..utilities import setup_logger, LogClass
 
 
 class Floris():
@@ -34,9 +35,17 @@ class Floris():
     """
 
     def __init__(self, input_file=None, input_dict=None):
+        # Parse the input into dictionaries
         input_reader = InputReader()
         self.meta_dict, turbine_dict, wake_dict, farm_dict \
             = input_reader.read(input_file, input_dict)
+
+        # Configure logging
+        logging_dict = self.meta_dict["logging"]
+        self.logger = setup_logger(name=__name__, logging_dict=logging_dict)
+        # self.log_to_console = self.logger.log_to_console
+
+        # Initialize the simulation objects
         turbine = Turbine(turbine_dict)
         wake = Wake(wake_dict)
         self.farm = Farm(farm_dict, turbine, wake)

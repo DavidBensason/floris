@@ -17,10 +17,10 @@ class InputReader():
     """
     InputReader parses json input files into inputs for FLORIS objects.
 
-    InputReader is a helper class which parses json input files and 
-    provides an interface to instantiate model objects in FLORIS. This 
-    class handles input validation regarding input type, but does not 
-    enforce value checking. It is designed to function as a singleton 
+    InputReader is a helper class which parses json input files and
+    provides an interface to instantiate model objects in FLORIS. This
+    class handles input validation regarding input type, but does not
+    enforce value checking. It is designed to function as a singleton
     object, but that is not enforced or required.
 
     Returns:
@@ -46,6 +46,7 @@ class InputReader():
 
         self._wake_properties = {
             "velocity_model": str,
+            "turbulence_model": str,
             "deflection_model": str,
             "combination_model": str,
             "parameters": dict
@@ -66,14 +67,14 @@ class InputReader():
 
     def _parseJSON(self, filename):
         """
-        Opens the input json file and parses the contents into a python 
+        Opens the input json file and parses the contents into a python
         dict.
 
         Args:
             filename:  A string that is the path to the json input file.
 
         Returns:
-            dict:  A dictionary *data* that contains the json input 
+            dict:  A dictionary *data* that contains the json input
             file.
         """
         with open(filename) as jsonfile:
@@ -82,17 +83,17 @@ class InputReader():
 
     def _validateJSON(self, json_dict, type_map):
         """
-        Verifies that the expected fields exist in the json input file 
-        and validates the type of the input data by casting the fields 
+        Verifies that the expected fields exist in the json input file
+        and validates the type of the input data by casting the fields
         to appropriate values based on the predefined type maps in.
 
         Args:
             json_dict: Input dictionary with all elements of type str.
-            type_map: Predefined type map dictionary for type checking 
+            type_map: Predefined type map dictionary for type checking
                 inputs structured as {"property": type}.
 
         Returns:
-            dict: Validated and correctly typed input property 
+            dict: Validated and correctly typed input property
             dictionary.
         """
 
@@ -103,8 +104,8 @@ class InputReader():
             raise KeyError("'type' key is required")
 
         if json_dict["type"] not in self._validObjects:
-            raise ValueError("'type' must be one of {}".format(
-                ", ".join(self._validObjects)))
+            raise ValueError("'type' must be one of {}".format(", ".join(
+                self._validObjects)))
 
         validated["type"] = json_dict["type"]
 
@@ -126,8 +127,8 @@ class InputReader():
                 raise KeyError("'{}' is required for object type '{}'".format(
                     element, validated["type"]))
 
-            value, error = self._cast_to_type(
-                type_map[element], properties[element])
+            value, error = self._cast_to_type(type_map[element],
+                                              properties[element])
             if error is not None:
                 raise error("'{}' must be of type '{}'".format(
                     element, type_map[element]))
