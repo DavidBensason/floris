@@ -77,7 +77,7 @@ print('Importing wind rose data...')
 
 # Create wind rose object and import wind rose dataframe using WIND Toolkit HSDS API.
 # Alternatively, load existing file with wind rose information.
-calculate_new_wind_rose = False
+calculate_new_wind_rose = True
 
 wind_rose = rose.WindRose()
 

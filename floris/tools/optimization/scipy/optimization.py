@@ -807,7 +807,7 @@ class YawOptimizationWindRose(Optimization):
                         wind_direction=[self.wd[i]], wind_speed=[self.ws[i]])
                 else:
                     self.fi.reinitialize_flow_field(
-                        wind_direction=[self.wd[i]], wind_speed=[self.ws[i]], turbulence_intensity=self.ti[i])
+                        wind_direction=[self.wd[i]], wind_speed=[self.ws[i]], turbulence_intensity=[self.ti[i]])
 
                 # calculate baseline power
                 self.fi.calculate_wake(yaw_angles=0.0)
@@ -887,7 +887,7 @@ class YawOptimizationWindRose(Optimization):
                         wind_direction=[self.wd[i]], wind_speed=[self.ws[i]])
                 else:
                     self.fi.reinitialize_flow_field(
-                        wind_direction=[self.wd[i]], wind_speed=[self.ws[i]], turbulence_intensity=self.ti[i])
+                        wind_direction=[self.wd[i]], wind_speed=[self.ws[i]], turbulence_intensity=[self.ti[i]])
 
                 opt_yaw_angles = self._optimize()
 
@@ -907,7 +907,7 @@ class YawOptimizationWindRose(Optimization):
                         wind_direction=[self.wd[i]], wind_speed=[self.ws[i]])
                 else:
                     self.fi.reinitialize_flow_field(
-                        wind_direction=[self.wd[i]], wind_speed=[self.ws[i]], turbulence_intensity=self.ti[i])
+                        wind_direction=[self.wd[i]], wind_speed=[self.ws[i]], turbulence_intensity=[self.ti[i]])
                 self.fi.calculate_wake(yaw_angles=0.0)
                 opt_yaw_angles = self.nturbs*[0.0]
                 power_opt = self.fi.get_turbine_power(include_unc=self.include_unc, \
