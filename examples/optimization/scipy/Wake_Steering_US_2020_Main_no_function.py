@@ -187,8 +187,8 @@ wind_rose.plot_ti_ws() ## ALSO NOT WORKINg
 #ti_wd_name = str(kf['p_name'].iloc[0]) + "_ti_wd.jpg"
 #plt.savefig(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\ti_wd_plots_farm\{}'.format(ti_wd_name))
 #wind_rose.ti_plot_wd(kf)
-print("Pause")
-input("PRESS ENTER TO CONTINUE.")
+#print("Pause")
+#input("PRESS ENTER TO CONTINUE.")
 # =============================================================================
 print('Finding optimal yaw angles in FLORIS...')
 # =============================================================================
@@ -198,7 +198,7 @@ print('Finding optimal yaw angles in FLORIS...')
 #2) Just_Unc : Run for just robost 
 #3) Just_Base : Run for just non-robust
 
-Optimization_case= "Unc_and_base"
+Optimization_case= "Just_Base"
 
 if Optimization_case == "Unc_and_base":
 
