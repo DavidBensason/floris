@@ -49,8 +49,8 @@ fi = wfct.floris_interface.FlorisInterface(
 #)
 
 #Define Wake Model and input parameters 
-fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = False
-fi.floris.farm.wake.deflection_model.use_secondary_steering = False
+fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = True
+fi.floris.farm.wake.deflection_model.use_secondary_steering = True
 
 fi.floris.farm.flow_field.wake.deflection_model.deflection_multiplier = 1.2
 fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
@@ -58,7 +58,7 @@ fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
 # Define wind farm coordinates and layout
 #farm_name = "Jericho Mountain"
 mf =pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
-kf = (mf.loc[mf['p_name'] == "Jericho Mountain"])
+kf = (mf.loc[mf['p_name'] == "Wildcat Ranch"])
 wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
 
 # Set wind farm to N_row x N_row grid with constant spacing 
