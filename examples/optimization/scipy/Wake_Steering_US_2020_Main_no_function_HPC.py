@@ -57,7 +57,7 @@ fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
 
 # Define wind farm coordinates and layout
 #farm_name = "Jericho Mountain"
-mf =pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
+mf =pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
 kf = (mf.loc[mf['p_name'] == "Jericho Mountain"])
 wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
 
@@ -85,7 +85,7 @@ C_p_rated = 0.43003137
 C_t_rated = 0.70701647
 
 #Normalized wind speed for any turbine
-tf= pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_Cp_look_up_table')
+tf= pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_Cp_look_up_table')
 
 ## Enumerate so for each turbine 
 for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):

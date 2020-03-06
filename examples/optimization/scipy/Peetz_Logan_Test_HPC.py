@@ -29,8 +29,8 @@ import floris.tools.wind_rose as rose
 import floris.tools.power_rose as pr
 import numpy as np
 import pandas as pd
-import WakeSteering_US.WakeSteering_US.namingfarm as nf
-import WakeSteering_US.WakeSteering_US.cp_for_any_turb as cturb
+import WakeSteering_US.namingfarm as nf
+import WakeSteering_US.cp_for_any_turb as cturb
 import pdb
 import os
 
@@ -57,7 +57,7 @@ fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
 
 # Define wind farm coordinates and layout
 #farm_name = "Jericho Mountain"
-mf =pd.read_pickle('/home/dbensaso/floris/examples/optimization/scipy/Peetz_Logan_Data')
+mf =pd.read_pickle('/home/dbensaso/code/floris/examples/optimization/scipy/Peetz_Logan_Data')
 kf = (mf.loc[mf['p_name'] == "Peetz Table"])
 wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
 
@@ -85,7 +85,7 @@ C_p_rated = 0.43003137
 C_t_rated = 0.70701647
 
 #Normalized wind speed for any turbine
-tf= pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_Cp_look_up_table')
+tf= pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_Cp_look_up_table')
 
 ## Enumerate so for each turbine 
 for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
