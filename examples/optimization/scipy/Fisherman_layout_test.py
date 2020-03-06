@@ -168,8 +168,8 @@ def Fisherman_dens(use_yaw_added_recovery=False,
     # Plot ti vs. ws 
     wind_rose.plot_ti_ws()
     
-    print("Pause")
-    input("PRESS ENTER TO CONTINUE.")
+    #print("Pause")
+    #input("PRESS ENTER TO CONTINUE.")
     # =============================================================================
     print('Finding optimal yaw angles in FLORIS...')
     # =============================================================================
