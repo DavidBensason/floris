@@ -41,7 +41,6 @@ class FlowField():
     Returns:
         FlowField: An instantiated FlowField object.
     """
-
     def __init__(self, wind_shear, wind_veer, air_density, wake, turbine_map,
                  wind_map):
 
@@ -54,7 +53,10 @@ class FlowField():
             wind_map=wind_map,
             with_resolution=wake.velocity_model.model_grid_resolution)
         #TODO consider remapping wake_list with reinitialize flow field
-        self.wake_list = {turbine: None for _, turbine in self.turbine_map.items}
+        self.wake_list = {
+            turbine: None
+            for _, turbine in self.turbine_map.items
+        }
 
     def _discretize_turbine_domain(self):
         """
@@ -504,7 +506,10 @@ class FlowField():
                 i]
             turbine.reset_velocities()
 
-    def calculate_wake(self, no_wake=False, points=None, track_n_upstream_wakes=False):
+    def calculate_wake(self,
+                       no_wake=False,
+                       points=None,
+                       track_n_upstream_wakes=False):
         """
         Updates the flow field based on turbine activity.
 
@@ -532,7 +537,10 @@ class FlowField():
 
         if track_n_upstream_wakes:
             # keep track of the wakes upstream of each turbine
-            self.wake_list = {turbine: 0 for _, turbine in self.turbine_map.items}
+            self.wake_list = {
+                turbine: 0
+                for _, turbine in self.turbine_map.items
+            }
 
         # reinitialize the turbines
         for i, turbine in enumerate(self.turbine_map.turbines):
@@ -609,7 +617,10 @@ class FlowField():
 
             ###########
             # include turbulence model for the gaussian wake model from Porte-Agel
-            if 'gauss' in self.wake.turbulence_model.model_string  or self.wake.turbulence_model.model_string == 'blondel':
+            if self.wake.turbulence_model.model_string == 'gauss' or \
+                    self.wake.turbulence_model.model_string == 'ishihara':
+                # print('turbulence calcs here.')
+                # pass
 
                 # compute area overlap of wake on other turbines and update downstream turbine turbulence intensities
                 for coord_ti, turbine_ti in sorted_map:
@@ -659,14 +670,24 @@ class FlowField():
             # combine this turbine's wake into the full wake field
             if not no_wake:
                 u_wake = self.wake.combination_function(u_wake, turb_u_wake)
-                v_wake = (v_wake + turb_v_wake)
-                w_wake = (w_wake + turb_w_wake)
+                # v_wake = (v_wake + turb_v_wake)
+                # w_wake = (w_wake + turb_w_wake)
+
+                # gauss
+                # self.v = self.v + turb_v_wake
+                # self.w = self.w + turb_w_wake
+
+                # curl
+                # self.v = turb_v_wake
+                # self.w = turb_w_wake
+                self.v = self.wake.combination_function(turb_v_wake, self.v)
+                self.w = self.wake.combination_function(turb_w_wake, self.w)
 
         # apply the velocity deficit field to the freestream
         if not no_wake:
             self.u = self.u_initial - u_wake
-            self.v = self.v_initial + v_wake
-            self.w = self.w_initial + w_wake
+            # self.v = self.v_initial + v_wake
+            # self.w = self.w_initial + w_wake
 
         # rotate the grid if it is curl
         if self.wake.velocity_model.model_string == 'curl':
@@ -691,4 +712,3 @@ class FlowField():
             ... floris.farm.flow_field.domain_bounds()
         """
         return self._xmin, self._xmax, self._ymin, self._ymax, self._zmin, self._zmax
-
