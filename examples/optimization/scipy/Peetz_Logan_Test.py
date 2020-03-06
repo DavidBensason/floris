@@ -57,8 +57,8 @@ fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
 
 # Define wind farm coordinates and layout
 #farm_name = "Jericho Mountain"
-mf =pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
-kf = (mf.loc[mf['p_name'] == "Jericho Mountain"])
+mf =pd.read_pickle('/home/dbensaso/floris/examples/optimization/scipy/Peetz_Logan_Data')
+kf = (mf.loc[mf['p_name'] == "Peetz Table"])
 wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
 
 # Set wind farm to N_row x N_row grid with constant spacing 
@@ -374,5 +374,7 @@ elif Optimization_case == "Just_Base":
 
 else: 
     raise SystemExit("None Valid Optimization Method Chosen")
+
+
 
 
