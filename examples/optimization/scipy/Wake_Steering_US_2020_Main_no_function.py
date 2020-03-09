@@ -173,7 +173,7 @@ else:
 #Plot Wind Rose
 wind_rose.plot_wind_rose()
 #windrose_name = str(kf['p_name'].iloc[0]) + "_Wind_rose.png"
-#plt.savefig('/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/{}'.format(windrose_name))
+#plt.savefig(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/{}'.format(windrose_name))
 
 wind_rose.plot_wind_rose_ti() ##NOT WORKING CHECK THIS
 
@@ -196,7 +196,7 @@ print('Finding optimal yaw angles in FLORIS...')
 #2) Just_Unc : Run for just robost 
 #3) Just_Base : Run for just non-robust
 
-Optimization_case= "Unc_and_base"
+Optimization_case= "Just_Base"
 
 if Optimization_case == "Unc_and_base":
 
@@ -369,6 +369,15 @@ elif Optimization_case == "Just_Base":
     power_rose.plot_by_direction(axarr)
     power_rose.report()
     plt.show()
+
+    data = pd.DataFrame([])
+    data = data.append(pd.DataFrame({'Farm Name': kf['p_name'].iloc[0], '#Turbine': len(kf), 'Farm_lat':kf["ylat"].mean(), 'Farm_lon': kf["xlong"].mean(), 'AEP_No_Wake': power_rose.total_no_wake, 
+                                     'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
+                                     '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
+                                     'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
+                                     'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
+                                     index=[0]), ignore_index=True)
+
 
 else: 
     raise SystemExit("None Valid Optimization Method Chosen")

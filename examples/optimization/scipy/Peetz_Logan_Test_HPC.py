@@ -33,6 +33,7 @@ import WakeSteering_US.namingfarm as nf
 import WakeSteering_US.cp_for_any_turb as cturb
 import pdb
 import os
+import six
 
 # Instantiate the FLORIS object
 file_dir = os.path.dirname(os.path.abspath(__file__))
@@ -40,6 +41,29 @@ fi = wfct.floris_interface.FlorisInterface(
     os.path.join(file_dir, '../../example_input.json')
 )
 
+# Function for plotting final tabular data as an image 
+def render_mpl_table(table_new, col_width=2.8, row_height=0.625, font_size=14,
+                     header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
+                     bbox=[0, 0.1, 1, 0.8], header_columns=1,
+                     ax=None, **kwargs):
+    if ax is None:
+        size = (np.array(table_new.shape[::-1]) + np.array([0, 1])) * np.array([col_width, row_height])
+        fig, ax = plt.subplots(figsize=size)
+        ax.axis('off')
+
+    mpl_table = ax.table(cellText=table_new.values, bbox=bbox, colLabels=table_new.columns, **kwargs)
+
+    mpl_table.auto_set_font_size(False)
+    mpl_table.set_fontsize(font_size)
+
+    for k, cell in  six.iteritems(mpl_table._cells):
+        cell.set_edgecolor(edge_color)
+        if k[0] == 0 or k[1] < header_columns:
+            cell.set_text_props(weight='bold', color='w')
+            cell.set_facecolor(header_color)
+        else:
+            cell.set_facecolor(row_colors[k[0]%len(row_colors) ])
+    return fig, ax
 
         
 # Instantiate the FLORIS object
@@ -129,6 +153,9 @@ hor_plane = fi.get_hor_plane(
 fig, ax = plt.subplots()
 wfct.visualization.visualize_cut_plane(hor_plane, ax=ax)
 ax.set_title("Baseline flow for U= 8 m/s  ,  Wind Direction= 270 $^\circ$")
+
+layout_name = str(kf['p_name'].iloc[0]) + "_layout.png"
+plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_layout/{}'.format(layout_name))
 #layout_name = str(kf['p_name'].iloc[0]) + "_layout.jpg"
 #plt.savefig(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\layout_farms\{}'.format(layout_name))
 #ax.set_title('Baseline flow for U = 8 m/s, Wind Direction = 270$^\circ$')
@@ -172,14 +199,18 @@ else:
 
 #Plot Wind Rose
 wind_rose.plot_wind_rose()
+windrose_name = str(kf['p_name'].iloc[0]) + "_Wind_rose.png"
+plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose/{}'.format(windrose_name))
 
+#Plot Ti rose 
+wind_rose.plot_wind_rose_ti() 
+ti_rose = kf['p_name'].iloc[0] + "_ti_rose.png"
+plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/ti_rose/{}'.format(ti_rose))
 
-#windrose_name = str(kf['p_name'].iloc[0]) + "_Wind_rose.jpg"
-#plt.savefig(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\windrose_farms\{}'.format(windrose_name))
-
-wind_rose.plot_wind_rose_ti() ##NOT WORKING CHECK THIS
-
+#Plot Ti Winspeed dist.
 wind_rose.plot_ti_ws() ## ALSO NOT WORKINg
+ti_ws = kf['p_name'].iloc[0] + "_ti_ws.png"
+plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/ti_ws/{}'.format(ti_ws))
 
 #ti_ws_name = str(kf['p_name'].iloc[0]) + "_ti_ws.jpg"
 #plt.savefig(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\ti_ws_plots_farm\{}'.format(ti_ws_name))
@@ -256,6 +287,10 @@ if Optimization_case == "Unc_and_base":
     fig, axarr = plt.subplots(3, 1, sharex=True, figsize=(6.4, 6.5))
     power_rose.plot_by_direction(axarr)
     power_rose.report()
+    
+    # Save farm report with designated name and path (this case  HPC)
+    report_farm_without_unc = kf['p_name'].iloc[0] + "_report_without_unc.png"
+    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_report/{}'.format(report_farm_without_unc))
     plt.show()
     
     # Summarize AEP gains WITH uncertainty
@@ -278,13 +313,70 @@ if Optimization_case == "Unc_and_base":
     df_turbine_power_opt['ws'] = df.ws
     df_turbine_power_opt['wd'] = df.wd
     # Summarize using the power rose module
-    case_name = 'Example '+kf['p_name'].iloc[0]+ ' Wind Farm with UNC'
-    power_rose = pr.PowerRose(case_name, df_power, df_turbine_power_no_wake, df_turbine_power_baseline,df_yaw, df_turbine_power_opt)
+    case_name_1 = 'Example '+kf['p_name'].iloc[0]+ ' Wind Farm with UNC'
+    power_rose = pr.PowerRose(case_name_1, df_power, df_turbine_power_no_wake, df_turbine_power_baseline,df_yaw, df_turbine_power_opt)
     
     fig, axarr = plt.subplots(3, 1, sharex=True, figsize=(6.4, 6.5))
     power_rose.plot_by_direction(axarr)
     power_rose.report()
+    
+    # Save farm report with designated name and path (this case  HPC)
+    report_farm_with_unc = kf['p_name'].iloc[0] + "_report_with_unc.png"
+    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_report/{}'.format(report_farm_with_unc))
     plt.show()
+
+    #Save final data as a pickle (without_unc)
+    data = pd.DataFrame([])
+    data = data.append(pd.DataFrame({'Farm Name': kf['p_name'].iloc[0], '#Turbine': len(kf), 'Farm_lat':kf["ylat"].mean(), 'Farm_lon': kf["xlong"].mean(), 'AEP_No_Wake': power_rose.total_no_wake, 
+                                     'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
+                                     '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
+                                     'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
+                                     'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
+                                     index=[0]), ignore_index=True)
+    table_pickle = "Pickle_table_" + kf['p_name'].iloc[0] + "_without_unc"
+    data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
+    
+    # Save final data as an image 
+    farm_data = [('AEP(GWh)',round(float(data.iloc[0]['AEP_No_Wake']),3), round(float(data.iloc[0]['AEP_Baseline']),3), round(float(data.iloc[0]['AEP_Opt']),3)), 
+            ('%', '--', round(float(data.iloc[0]['%_Baseline']),3), round(float(data.iloc[0]['%_Opt']),3)), 
+            ('%Wake_Loss', '--',round(float(data.iloc[0]['Wk_Loss_Baseline']),3), round(float(data.iloc[0]['Wk_Loss_Opt']),3)),
+            ('%AEP_Gain', '--', '--', round(float(data.iloc[0]['AEP_Gain_Opt']),3)), 
+            ('Loss_Reduced', '--', '--', round(float(data.iloc[0]['Loss_Red_Opt']),3))]
+
+    table_new= pd.DataFrame(farm_data, columns = [' ','No-Wake','Baseline','Optimized'], index= None)
+        
+    # Render Table using above function 
+    fig, ax = render_mpl_table(table_new)
+    
+    table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_without_unc"
+    data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
+
+    #Save final data as a pickle (with unc)
+    data = pd.DataFrame([])
+    data = data.append(pd.DataFrame({'Farm Name': kf['p_name'].iloc[0], '#Turbine': len(kf), 'Farm_lat':kf["ylat"].mean(), 'Farm_lon': kf["xlong"].mean(), 'AEP_No_Wake': power_rose.total_no_wake, 
+                                     'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
+                                     '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
+                                     'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
+                                     'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
+                                     index=[0]), ignore_index=True)
+    table_pickle = "Pickle_table_" + kf['p_name'].iloc[0] + "_with_unc"
+    data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
+    
+    # Save final data as an image 
+    farm_data = [('AEP(GWh)',round(float(data.iloc[0]['AEP_No_Wake']),3), round(float(data.iloc[0]['AEP_Baseline']),3), round(float(data.iloc[0]['AEP_Opt']),3)), 
+            ('%', '--', round(float(data.iloc[0]['%_Baseline']),3), round(float(data.iloc[0]['%_Opt']),3)), 
+            ('%Wake_Loss', '--',round(float(data.iloc[0]['Wk_Loss_Baseline']),3), round(float(data.iloc[0]['Wk_Loss_Opt']),3)),
+            ('%AEP_Gain', '--', '--', round(float(data.iloc[0]['AEP_Gain_Opt']),3)), 
+            ('Loss_Reduced', '--', '--', round(float(data.iloc[0]['Loss_Red_Opt']),3))]
+
+    table_new= pd.DataFrame(farm_data, columns = [' ','No-Wake','Baseline','Optimized'], index= None)
+        
+    # Render Table using above function 
+    fig, ax = render_mpl_table(table_new)
+    
+    table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_with_unc"
+    data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
+
 
 elif Optimization_case == "Just_Unc":
     
@@ -327,7 +419,37 @@ elif Optimization_case == "Just_Unc":
     fig, axarr = plt.subplots(3, 1, sharex=True, figsize=(6.4, 6.5))
     power_rose.plot_by_direction(axarr)
     power_rose.report()
+    
+    # Save farm report with designated name and path (this case  HPC)
+    report_farm_with_unc = kf['p_name'].iloc[0] + "_report_with_unc.png"
+    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_report/{}'.format(report_farm_with_unc))
     plt.show()
+
+    # Save final data as a pickle 
+    data = pd.DataFrame([])
+    data = data.append(pd.DataFrame({'Farm Name': kf['p_name'].iloc[0], '#Turbine': len(kf), 'Farm_lat':kf["ylat"].mean(), 'Farm_lon': kf["xlong"].mean(), 'AEP_No_Wake': power_rose.total_no_wake, 
+                                     'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
+                                     '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
+                                     'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
+                                     'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
+                                     index=[0]), ignore_index=True)
+    table_pickle = "Pickle_table_" + kf['p_name'].iloc[0] + "_with_unc"
+    data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
+    
+    # Save final data as an image 
+    farm_data = [('AEP(GWh)',round(float(data.iloc[0]['AEP_No_Wake']),3), round(float(data.iloc[0]['AEP_Baseline']),3), round(float(data.iloc[0]['AEP_Opt']),3)), 
+            ('%', '--', round(float(data.iloc[0]['%_Baseline']),3), round(float(data.iloc[0]['%_Opt']),3)), 
+            ('%Wake_Loss', '--',round(float(data.iloc[0]['Wk_Loss_Baseline']),3), round(float(data.iloc[0]['Wk_Loss_Opt']),3)),
+            ('%AEP_Gain', '--', '--', round(float(data.iloc[0]['AEP_Gain_Opt']),3)), 
+            ('Loss_Reduced', '--', '--', round(float(data.iloc[0]['Loss_Red_Opt']),3))]
+
+    table_new= pd.DataFrame(farm_data, columns = [' ','No-Wake','Baseline','Optimized'], index= None)
+        
+    # Render Table using above function 
+    fig, ax = render_mpl_table(table_new)
+    
+    table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_with_unc"
+    data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
 
 elif Optimization_case == "Just_Base":
     
@@ -370,7 +492,38 @@ elif Optimization_case == "Just_Base":
     fig, axarr = plt.subplots(3, 1, sharex=True, figsize=(6.4, 6.5))
     power_rose.plot_by_direction(axarr)
     power_rose.report()
+    
+    # Save farm report with designated name and path (this case  HPC)
+    report_farm_without_unc = kf['p_name'].iloc[0] + "_report_without_unc.png"
+    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_report/{}'.format(report_farm_without_unc))
     plt.show()
+
+
+    #Save final data as a pickle 
+    data = pd.DataFrame([])
+    data = data.append(pd.DataFrame({'Farm Name': kf['p_name'].iloc[0], '#Turbine': len(kf), 'Farm_lat':kf["ylat"].mean(), 'Farm_lon': kf["xlong"].mean(), 'AEP_No_Wake': power_rose.total_no_wake, 
+                                     'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
+                                     '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
+                                     'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
+                                     'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
+                                     index=[0]), ignore_index=True)
+    table_pickle = "Pickle_table_" + kf['p_name'].iloc[0] + "_without_unc"
+    data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
+    
+    # Save final data as an image 
+    farm_data = [('AEP(GWh)',round(float(data.iloc[0]['AEP_No_Wake']),3), round(float(data.iloc[0]['AEP_Baseline']),3), round(float(data.iloc[0]['AEP_Opt']),3)), 
+            ('%', '--', round(float(data.iloc[0]['%_Baseline']),3), round(float(data.iloc[0]['%_Opt']),3)), 
+            ('%Wake_Loss', '--',round(float(data.iloc[0]['Wk_Loss_Baseline']),3), round(float(data.iloc[0]['Wk_Loss_Opt']),3)),
+            ('%AEP_Gain', '--', '--', round(float(data.iloc[0]['AEP_Gain_Opt']),3)), 
+            ('Loss_Reduced', '--', '--', round(float(data.iloc[0]['Loss_Red_Opt']),3))]
+
+    table_new= pd.DataFrame(farm_data, columns = [' ','No-Wake','Baseline','Optimized'], index= None)
+        
+    # Render Table using above function 
+    fig, ax = render_mpl_table(table_new)
+    
+    table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_without_unc"
+    data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
 
 else: 
     raise SystemExit("None Valid Optimization Method Chosen")
