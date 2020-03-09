@@ -172,8 +172,6 @@ else:
 
 #Plot Wind Rose
 wind_rose.plot_wind_rose()
-
-
 #windrose_name = str(kf['p_name'].iloc[0]) + "_Wind_rose.jpg"
 #plt.savefig(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\windrose_farms\{}'.format(windrose_name))
 
