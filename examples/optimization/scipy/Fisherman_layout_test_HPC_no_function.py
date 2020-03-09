@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import floris.tools as wfct
 import floris.tools.visualization as vis
 import floris.tools.cut_plane as cp
-from floris.tools.optimization.scipy.optimization import YawOptimizationWindRose
+from floris.tools.optimization.scipy.optimization import YawOptimizationWindRoseParallel
 import floris.tools.wind_rose as rose
 import floris.tools.power_rose as pr
 import numpy as np
@@ -175,7 +175,7 @@ Optimization_case= "Just_Base"
 if Optimization_case == "Unc_and_base":
 
 
-    yaw_opt = YawOptimizationWindRose(fi, df.wd, df.ws,df.ti,
+    yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws,df.ti,
                                minimum_yaw_angle=min_yaw,
                                maximum_yaw_angle=max_yaw,
                                minimum_ws=minimum_ws,
@@ -190,7 +190,7 @@ if Optimization_case == "Unc_and_base":
     
     
     # Instantiate the Optimization object FOR NOW ASSUME TI WORKS
-    yaw_opt = YawOptimizationWindRose(fi, df.wd, df.ws, df.ti,
+    yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws, df.ti,
                                    minimum_yaw_angle=min_yaw, 
                                    maximum_yaw_angle=max_yaw,
                                    minimum_ws=minimum_ws,
@@ -260,7 +260,7 @@ if Optimization_case == "Unc_and_base":
 
 elif Optimization_case == "Just_Unc":
     
-    yaw_opt = YawOptimizationWindRose(fi, df.wd, df.ws,df.ti,
+    yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws,df.ti,
                                    minimum_yaw_angle=min_yaw,
                                    maximum_yaw_angle=max_yaw,
                                    minimum_ws=minimum_ws,
@@ -304,7 +304,7 @@ elif Optimization_case == "Just_Unc":
 elif Optimization_case == "Just_Base":
     
     # Instantiate the Optimization object FOR NOW ASSUME TI WORKS
-    yaw_opt = YawOptimizationWindRose(fi, df.wd, df.ws, df.ti,
+    yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws, df.ti,
                                    minimum_yaw_angle=min_yaw, 
                                    maximum_yaw_angle=max_yaw,
                                    minimum_ws=minimum_ws,

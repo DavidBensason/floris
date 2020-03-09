@@ -198,7 +198,7 @@ print('Finding optimal yaw angles in FLORIS...')
 #2) Just_Unc : Run for just robost 
 #3) Just_Base : Run for just non-robust
 
-Optimization_case= "Just_Base"
+Optimization_case= "Unc_and_base"
 
 if Optimization_case == "Unc_and_base":
 
