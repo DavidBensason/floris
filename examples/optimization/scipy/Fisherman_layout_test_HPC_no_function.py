@@ -153,7 +153,7 @@ print('Importing wind rose data...')
 
 # Create wind rose object and import wind rose dataframe using WIND Toolkit HSDS API.
 # Alternatively, load existing file with wind rose information.
-calculate_new_wind_rose = True
+calculate_new_wind_rose = False
 
 wind_rose = rose.WindRose()
 
@@ -173,7 +173,9 @@ if calculate_new_wind_rose:
 	                                                    en_date = None)
 
 else:
-	df = wind_rose.load(os.path.join(file_dir, 'windtoolkit_geo_center_us.p'))
+	file_name = str(kf) + "_Wind_Farm.p"
+    df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/{}'.format(file_name))
+
 #fi.floris.farm.flow_field.turbine_map.turbines.power_thrust_table["power"] = cp_8MW
 #fi.floris.farm.flow_field.turbine_map.turbines.power_thrust_table["thrust"] = ct_8MW
 #fi.floris.farm.flow_field.turbine_map.turbines.rotor_diameter = 164
