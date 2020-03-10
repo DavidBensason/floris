@@ -134,6 +134,7 @@ ax.set_title("Baseline flow for U= 8 m/s  ,  Wind Direction= 270 $^\circ$")
 #ax.set_title('Baseline flow for U = 8 m/s, Wind Direction = 270$^\circ$')
 #str(fi.reinitialize_flow_field.wind_speed)
 #str(fi.reinitialize_flow_field.wind_direction) #took these out from axis label 
+
 # ================================================================================
 print('Importing wind rose data...')
 # ================================================================================
