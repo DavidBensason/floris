@@ -201,7 +201,7 @@ Optimization_case= "Just_Base"
 
 if Optimization_case == "Unc_and_base":
 
-
+    
     yaw_opt = YawOptimizationWindRose(fi, df.wd, df.ws,df.ti,
                                minimum_yaw_angle=min_yaw,
                                maximum_yaw_angle=max_yaw,
