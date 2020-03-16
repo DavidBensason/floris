@@ -61,7 +61,7 @@ if __name__ == '__main__':
     wf_coordinate = [41.05, -70.2]
     
     # set min and max yaw offsets for optimization
-    min_yaw = 0.0
+    min_yaw = -25.0
     max_yaw = 25.0
     
     # Define minimum and maximum wind speed for optimizing power. 
