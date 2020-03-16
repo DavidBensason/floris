@@ -34,15 +34,15 @@ import WakeSteering_US.cp_for_any_turb as cturb
 import pdb
 import os
 import six
-from mpi4py import MPI
+#from mpi4py import MPI
 
-comm = MPI.COMM_WORLD
-rank = comm.Get_rank()
-if rank > 0:
-    print('DUNZO',rank)
-else:
-    print('Going forward with rank 0')
-    
+#comm = MPI.COMM_WORLD
+#rank = comm.Get_rank()
+#if rank > 0:
+#    print('DUNZO',rank)
+#else:
+#    print('Going forward with rank 0')
+if __name__ == '__main__':
     # Instantiate the FLORIS object
     file_dir = os.path.dirname(os.path.abspath(__file__))
     fi = wfct.floris_interface.FlorisInterface(
@@ -89,7 +89,7 @@ else:
     # Define wind farm coordinates and layout
     #farm_name = "Jericho Mountain"
     mf =pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
-    kf = (mf.loc[mf['p_name'] == "Jericho Mountain])
+    kf = (mf.loc[mf['p_name'] == "Jericho Mountain"])
     kf1 = "Wildcat Ranch"
     wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
     
@@ -194,7 +194,7 @@ else:
     
     
     else:
-        file_name = str(kf1['p_name'].iloc[0]) + "_Wind_Farm.p"
+        file_name = str(kf1) + "_Wind_Farm.p"
         df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/{}'.format(file_name))
         
         #    file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
