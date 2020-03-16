@@ -87,31 +87,29 @@ fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
 kf= "Fishermans"
 
 D = 164
-N_row =12 
-T_row = 8
+N_row =2 
+T_row = 2
 Num_Turb = N_row*T_row
-spc_N = 11.2926829268 *(12/N_row)  #(1Nautical mile/164)
+spc_N = 11.2926829268 *(14/N_row)  #(1Nautical mile/164)
 spc_T= 11.2926829268 * (8/T_row) #(1Nautical mile/164)
 layout_x = []
 layout_y = []
 for i in range(N_row):
-	for k in range(T_row):
-		layout_x.append(i*spc_N*D)
-		layout_y.append(k*spc_T*D)
+    for k in range(T_row):
+        layout_x.append(i*spc_N*D*math.cos(-45) - k*spc_T*D*math.cos(-45))
+        layout_y.append(i*spc_N*D*math.cos(-45) + k*spc_T*D*math.cos(-45))
 
+#remove option
+#remove= [len(layout_x)-15,len(layout_x)-8,len(layout_x)-7,len(layout_x)-4,len(layout_x)-3,len(layout_x)-1]
+#layout_x= [i for j, i in enumerate(layout_x) if j not in remove]
+#layout_y= [i for j, i in enumerate(layout_y) if j not in remove]
 
-new_layout_x= []
-new_layout_y=[]
-for i in layout_x:
-    for j in layout_y:
-        new_layout_x.append(i*math.cos(-45) -j *math.cos(-45))
-        new_layout_y.append(i*math.cos(-45) +j *math.cos(-45))
 
 N_turb = len(layout_x)
 
 
 
-fi.reinitialize_flow_field(layout_array=(new_layout_x, new_layout_y),wind_direction=[270.0],wind_speed=[8.0])
+fi.reinitialize_flow_field(layout_array=(layout_x, layout_y),wind_direction=[270.0],wind_speed=[8.0])
 fi.calculate_wake()
 
 cp_8MW= [0,0,0,0,0.13,0.3,0.37,0.39,0.41,0.42,0.43,0.43,0.44,0.44,0.44,0.44,0.44,0.43,0.42,0.39,0.35,

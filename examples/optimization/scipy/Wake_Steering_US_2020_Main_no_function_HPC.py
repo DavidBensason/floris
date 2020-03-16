@@ -89,7 +89,7 @@ else:
     # Define wind farm coordinates and layout
     #farm_name = "Jericho Mountain"
     mf =pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
-    kf = (mf.loc[mf['p_name'] == "Wildcat Ranch"])
+    kf = (mf.loc[mf['p_name'] == "Jericho Mountain"])
     wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
     
     # Set wind farm to N_row x N_row grid with constant spacing 

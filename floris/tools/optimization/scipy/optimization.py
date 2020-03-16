@@ -1051,10 +1051,10 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose):
 
         if ws >= self.minimum_ws:
             if ti is None:
-                self.fi.reinitialize_flow_field(wind_direction=wd, wind_speed=ws)
+                self.fi.reinitialize_flow_field(wind_direction=[wd], wind_speed=[ws])
             else:
                 self.fi.reinitialize_flow_field(
-                    wind_direction=wd, wind_speed=ws, turbulence_intensity=ti)
+                    wind_direction=[wd], wind_speed=[ws], turbulence_intensity=[ti])
             # calculate baseline power
             self.fi.calculate_wake(yaw_angles=0.0)
             power_base = self.fi.get_turbine_power(include_unc=self.include_unc, \
@@ -1115,10 +1115,10 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose):
 
         if (ws >= self.minimum_ws) & (ws <= self.maximum_ws):
             if ti is None:
-                self.fi.reinitialize_flow_field(wind_direction=wd, wind_speed=ws)
+                self.fi.reinitialize_flow_field(wind_direction=[wd], wind_speed=[ws])
             else:
                 self.fi.reinitialize_flow_field(
-                    wind_direction=wd, wind_speed=ws, turbulence_intensity=ti)
+                    wind_direction=[wd], wind_speed=[ws], turbulence_intensity=[ti])
 
             opt_yaw_angles = self._optimize()
 
@@ -1134,10 +1134,10 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose):
             print('No change in controls suggested for this inflow \
                     condition...')
             if ti is None:
-                self.fi.reinitialize_flow_field(wind_direction=wd, wind_speed=ws)
+                self.fi.reinitialize_flow_field(wind_direction=[wd], wind_speed=[ws])
             else:
                 self.fi.reinitialize_flow_field(
-                    wind_direction=wd, wind_speed=ws, turbulence_intensity=ti)
+                    wind_direction=[wd], wind_speed=[ws], turbulence_intensity=[ti])
             self.fi.calculate_wake(yaw_angles=0.0)
             opt_yaw_angles = self.nturbs*[0.0]
             power_opt = self.fi.get_turbine_power(include_unc=self.include_unc, \
@@ -2093,7 +2093,7 @@ class PowerDensityOptimization1D(Optimization):
 
     def _AEP_single_wd(self, wd, ws):
         self.fi.reinitialize_flow_field(
-            wind_direction=wd, wind_speed=ws)
+            wind_direction=[wd], wind_speed=[ws])
         self.fi.calculate_wake()
 
         turb_powers = [turbine.power for turbine in \
