@@ -89,7 +89,7 @@ else:
     # Define wind farm coordinates and layout
     #farm_name = "Jericho Mountain"
     mf =pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
-    kf = (mf.loc[mf['p_name'] == "Jericho Mountain])
+    kf = (mf.loc[mf['p_name'] == "Jericho Mountain"])
     kf1 = "Wildcat Ranch"
     wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
     
