@@ -89,8 +89,7 @@ if __name__ == '__main__':
     # Define wind farm coordinates and layout
     #farm_name = "Jericho Mountain"
     mf =pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
-    kf = (mf.loc[mf['p_name'] == "Jericho Mountain"])
-    kf1 = "Wildcat Ranch"
+    kf = (mf.loc[mf['p_name'] == "Wildcat Ranch"])
     wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
     
     # Set wind farm to N_row x N_row grid with constant spacing 
@@ -194,7 +193,7 @@ if __name__ == '__main__':
     
     
     else:
-        file_name = str(kf1) + "_Wind_Farm.p"
+        file_name = str(kf['p_name'].iloc[0]) + "_Wind_Farm.p"
         df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/{}'.format(file_name))
         
         #    file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
