@@ -87,10 +87,10 @@ fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
 kf= "Fishermans"
 
 D = 164
-N_row =2 
-T_row = 2
+N_row =13 
+T_row = 8
 Num_Turb = N_row*T_row
-spc_N = 11.2926829268 *(14/N_row)  #(1Nautical mile/164)
+spc_N = 11.2926829268 *(13/N_row)  #(1Nautical mile/164)
 spc_T= 11.2926829268 * (8/T_row) #(1Nautical mile/164)
 layout_x = []
 layout_y = []
