@@ -254,7 +254,7 @@ if __name__ == '__main__':
         
         
         # Instantiate the Optimization object FOR NOW ASSUME TI WORKS
-        yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws, df.ti,
+        yaw_opt = YawOptimizationWindRoseParallel(fidata.to_pickle, df.wd, df.ws, df.ti,
                                        minimum_yaw_angle=min_yaw, 
                                        maximum_yaw_angle=max_yaw,
                                        minimum_ws=minimum_ws,
@@ -354,33 +354,33 @@ if __name__ == '__main__':
         fig, ax = render_mpl_table(table_new)
         
         table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_without_unc"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
     
         #Save final data as a pickle (with unc)
-        data = pd.DataFrame([])
-        data = data.append(pd.DataFrame({'Farm Name': kf['p_name'].iloc[0], '#Turbine': len(kf), 'Farm_lat':kf["ylat"].mean(), 'Farm_lon': kf["xlong"].mean(), 'AEP_No_Wake': power_rose.total_no_wake, 
+        data1 = pd.DataFrame([])
+        data1 = data1.append(pd.DataFrame({'Farm Name': kf['p_name'].iloc[0], '#Turbine': len(kf), 'Farm_lat':kf["ylat"].mean(), 'Farm_lon': kf["xlong"].mean(), 'AEP_No_Wake': power_rose.total_no_wake, 
                                          'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
                                          '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
                                          'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
                                          'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                          index=[0]), ignore_index=True)
-        table_pickle = "Pickle_table_" + kf['p_name'].iloc[0] + "_with_unc"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
+        table_pickle_1 = "Pickle_table_" + kf['p_name'].iloc[0] + "_with_unc"
+        data1.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle_1))
         
         # Save final data as an image 
-        farm_data = [('AEP(GWh)',round(float(data.iloc[0]['AEP_No_Wake']),3), round(float(data.iloc[0]['AEP_Baseline']),3), round(float(data.iloc[0]['AEP_Opt']),3)), 
-                ('%', '--', round(float(data.iloc[0]['%_Baseline']),3), round(float(data.iloc[0]['%_Opt']),3)), 
-                ('%Wake_Loss', '--',round(float(data.iloc[0]['Wk_Loss_Baseline']),3), round(float(data.iloc[0]['Wk_Loss_Opt']),3)),
-                ('%AEP_Gain', '--', '--', round(float(data.iloc[0]['AEP_Gain_Opt']),3)), 
-                ('Loss_Reduced', '--', '--', round(float(data.iloc[0]['Loss_Red_Opt']),3))]
+        farm_data_1 = [('AEP(GWh)',round(float(data1.iloc[0]['AEP_No_Wake']),3), round(float(data1.iloc[0]['AEP_Baseline']),3), round(float(data1.iloc[0]['AEP_Opt']),3)), 
+                ('%', '--', round(float(data1.iloc[0]['%_Baseline']),3), round(float(data1.iloc[0]['%_Opt']),3)), 
+                ('%Wake_Loss', '--',round(float(data1.iloc[0]['Wk_Loss_Baseline']),3), round(float(data1.iloc[0]['Wk_Loss_Opt']),3)),
+                ('%AEP_Gain', '--', '--', round(float(data1.iloc[0]['AEP_Gain_Opt']),3)), 
+                ('Loss_Reduced', '--', '--', round(float(data1.iloc[0]['Loss_Red_Opt']),3))]
     
-        table_new= pd.DataFrame(farm_data, columns = [' ','No-Wake','Baseline','Optimized'], index= None)
+        table_new_1= pd.DataFrame(farm_data_1, columns = [' ','No-Wake','Baseline','Optimized'], index= None)
             
         # Render Table using above function 
-        fig, ax = render_mpl_table(table_new)
+        fig, ax = render_mpl_table(table_new_1)
         
-        table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_with_unc"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
+        table_imag_1 = "Table_Image_" + kf['p_name'].iloc[0]+ "_with_unc"
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image_1))
     
     elif Optimization_case == "Just_Unc":
         
@@ -453,7 +453,7 @@ if __name__ == '__main__':
         fig, ax = render_mpl_table(table_new)
         
         table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_with_unc"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
     
     elif Optimization_case == "Just_Base":
         
@@ -526,7 +526,7 @@ if __name__ == '__main__':
         fig, ax = render_mpl_table(table_new)
         
         table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_without_unc"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
     
     
     else: 
