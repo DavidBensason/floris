@@ -83,8 +83,8 @@ if __name__ == '__main__':
     #farm_name = "Jericho Mountain"
     
     
-    fl = pd.read_excel('Filtering Wind Farms.xlsx', sheetname='Sheet5') ### OR other where I put a list 
-    dw = np.array(fl[0])  #NUMBER FOR LIST TO RUN 
+    fl = pd.read_excel(r'/home/dbensaso/code/floris/examples/optimization/scipy/US_2020_Farm_List.xlsx') ### OR other where I put a list 
+    dw = np.array(fl[1])  #NUMBER FOR LIST TO RUN 
     mf =pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
     data = pd.DataFrame([])
     data1 = pd.DataFrame([]) #Only filled for Unc case
