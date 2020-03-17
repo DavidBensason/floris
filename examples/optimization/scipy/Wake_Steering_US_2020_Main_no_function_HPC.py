@@ -254,7 +254,7 @@ if __name__ == '__main__':
         
         
         # Instantiate the Optimization object FOR NOW ASSUME TI WORKS
-        yaw_opt = YawOptimizationWindRoseParallel(fidata.to_pickle, df.wd, df.ws, df.ti,
+        yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws, df.ti,
                                        minimum_yaw_angle=min_yaw, 
                                        maximum_yaw_angle=max_yaw,
                                        minimum_ws=minimum_ws,
@@ -379,7 +379,7 @@ if __name__ == '__main__':
         # Render Table using above function 
         fig, ax = render_mpl_table(table_new_1)
         
-        table_imag_1 = "Table_Image_" + kf['p_name'].iloc[0]+ "_with_unc"
+        table_image_1 = "Table_Image_" + kf['p_name'].iloc[0]+ "_with_unc"
         plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image_1))
     
     elif Optimization_case == "Just_Unc":

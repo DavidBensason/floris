@@ -58,7 +58,7 @@ fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
 # Define wind farm coordinates and layout
 #farm_name = "Jericho Mountain"
 mf =pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
-kf = (mf.loc[mf['p_name'] == "Jericho Mountain"])
+kf = (mf.loc[mf['p_name'] == "Apple Blossom"])
 wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
 
 # Set wind farm to N_row x N_row grid with constant spacing 
@@ -141,7 +141,7 @@ print('Importing wind rose data...')
 
 # Create wind rose object and import wind rose dataframe using WIND Toolkit HSDS API.
 # Alternatively, load existing .csv fi.le with wind rose information.
-calculate_wind_rose = True
+calculate_wind_rose = False
 
 wind_rose = rose.WindRose()
 
@@ -163,7 +163,9 @@ if calculate_wind_rose:
 
 else:
     df = wind_rose.load(os.path.join(file_dir, 'windtoolkit_geo_center_us.p'))
-    
+    #file_name = str(kf['p_name'].iloc[0]) + "_Wind_Farm.p"
+    #df = wind_rose.load(r'/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Saved_fig_data/pickle_files/{}'.format(file_name))
+
     #    file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
     #    df = wind_rose.load(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\pickle_files\{}'.format(file_name))
 
