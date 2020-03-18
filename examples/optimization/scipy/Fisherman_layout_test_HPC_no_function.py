@@ -94,17 +94,21 @@ if __name__ == '__main__':
     layout_x = []
     layout_y = []
     Num_Turb = N_row*T_row
-    
+    y_n = 10    ## For non-constant area option, spacing between N (vertical)
+    x_t = 10   ## For non-constant area option, spacing between T (horizontal)
     constant_area_layout = False
-    
-    if constant_area_layout:
+    relative_original_spacing = False    #y_n and x_t are multiples of (1852/D)=11.29
+    if constant_area_layout: ##THIS WORKS ATM 
         spc_N = (1852/D) *(13/N_row)  #(1Nautical mile/164)
         spc_T= (1852/D) * (8/T_row) #(1Nautical mile/164)
        
     else: 
-        spc_N = (1852/D) *N_row  #(1Nautical mile/164)
-        spc_T= (1852/D) * T_row #(1Nautical mile/164)
-    
+        if relative_original_spacing:
+            spc_N = (1852/D) * y_n  #(1Nautical mile/164)
+            spc_T= (1852/D) * x_t #(1Nautical mile/164)
+        else: #abs spacing
+            spc_N = y_n
+            spc_T = x_t
     
     for i in range(N_row):
         for k in range(T_row):
