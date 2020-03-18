@@ -141,8 +141,8 @@ if __name__ == '__main__':
         #hub_h= 109
         #Diam= 164
         for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
-                turbine.rotor_diameter = 109
-                turbine.hub_height = 164
+                turbine.rotor_diameter = D
+                turbine.hub_height = 109
                 cp_new = cp_8MW
                 ct_new = ct_8MW
                 turbine.power_thrust_table["power"] = cp_new
