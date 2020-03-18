@@ -84,7 +84,8 @@ if __name__ == '__main__':
     
     
     fl = pd.read_excel(r'/home/dbensaso/code/floris/examples/optimization/scipy/US_2020_Farm_List.xlsx') ### OR other where I put a list 
-    dw = np.array(fl[1])  #NUMBER FOR LIST TO RUN 
+    group = 1
+    dw = np.array(fl[int(group)])  #NUMBER FOR LIST TO RUN 
     mf =pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
     data = pd.DataFrame([])
     data1 = pd.DataFrame([]) #Only filled for Unc case
@@ -338,7 +339,7 @@ if __name__ == '__main__':
                                              'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
                                              'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                              index=[0]), ignore_index=True)
-            table_pickle = "Pickle_table_" + str(i) + "_without_unc"
+            table_pickle = "Pickle_table_Group_" + str(group) + "_without_unc"
             data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
             
             # Save final data as an image 
@@ -363,7 +364,7 @@ if __name__ == '__main__':
                                              'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
                                              'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                              index=[0]), ignore_index=True)
-            table_pickle_1 = "Pickle_table_" + str(i) + "_with_unc"
+            table_pickle_1 = "Pickle_table_Group_" + str(group) + "_with_unc"
             data1.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle_1))
             
             # Save final data as an image 
@@ -435,7 +436,7 @@ if __name__ == '__main__':
                                              'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
                                              'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                              index=[0]), ignore_index=True)
-            table_pickle = "Pickle_table_" + str(i) + "_with_unc"
+            table_pickle = "Pickle_table_Group_" + str(group) + "_with_unc"
             data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
             
             # Save final data as an image 
@@ -507,7 +508,7 @@ if __name__ == '__main__':
                                              'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
                                              'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                              index=[0]), ignore_index=True)
-            table_pickle = "Pickle_table_" + str(i) + "_without_unc"
+            table_pickle = "Pickle_table_Group_" + str(group) + "_without_unc"
             data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
             
             # Save final data as an image 
