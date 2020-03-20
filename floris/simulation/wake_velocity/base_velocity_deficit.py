@@ -61,18 +61,18 @@ class VelocityDeficit():
             self.calculate_VW_velocities = \
                 bool(self.parameter_dictionary["calculate_VW_velocities"])
         else:
-            self.logger.info('Using default option of not calculating V and W ' + \
+            self.logger.info('Using default option of calculating V and W ' + \
                 'velocity components (calculate_VW_velocities=False)')
-            self.calculate_VW_velocities = False
+            self.calculate_VW_velocities = True
 
         if 'use_yaw_added_recovery' in self.parameter_dictionary:
             # if set to True, self.calculate_VW_velocities also is set to True
             self.use_yaw_added_recovery = \
                 bool(self.parameter_dictionary["use_yaw_added_recovery"])
         else:
-            self.logger.info('Using default option of not applying added ' + \
+            self.logger.info('Using default option of applying added ' + \
                         'yaw-added recovery (use_yaw_added_recovery=True)')
-            self.use_yaw_added_recovery = False
+            self.use_yaw_added_recovery = True
 
         if 'yaw_recovery_alpha' in self.parameter_dictionary:
             self.yaw_recovery_alpha = \
@@ -90,19 +90,26 @@ class VelocityDeficit():
             self.logger.info(
                 ('Using default option eps_gain: %.1f' % self.eps_gain))
 
-    def _get_model_dict(self):
+    def _get_model_dict(self, default_dict):
         if self.model_string not in self.parameter_dictionary.keys():
-            err_msg = "The {} wake model was".format(self.model_string) + \
-                "instantiated but the model parameters were not found in " + \
-                "the input file or dictionary under " + \
-                "'wake.properties.parameters.{}'.".format(self.model_string)
-            self.logger.error(err_msg, stack_info=True)
-            raise KeyError(err_msg)
-            # raise KeyError("The {} wake model was".format(self.model_string) +
-            #     " instantiated but the model parameters were not found in the" +
-            #     " input file or dictionary under" +
-            #     " 'wake.properties.parameters.{}'.".format(self.model_string))
-        return self.parameter_dictionary[self.model_string]
+            return_dict = default_dict
+        else:
+            user_dict = self.parameter_dictionary[self.model_string]
+            # if default key is not in the user-supplied dict, then use the
+            # default value
+            for key in default_dict.keys():
+                if key not in user_dict:
+                    user_dict[key] = default_dict[key]
+            # if user-supplied key is not in the default dict, then warn the
+            # user that key: value pair was not used
+            for key in user_dict:
+                if key not in default_dict:
+                    err_msg = ('User supplied value {}, not in standard ' + \
+                        'wake velocity model dictionary.').format(key)
+                    self.logger.warning(err_msg, stack_info=True)
+                    raise KeyError(err_msg)
+            return_dict = user_dict
+        return return_dict
 
     def correction_steps(self, U_local, U, V, W, x_locations, y_locations,
                          turbine, turbine_coord):
@@ -329,7 +336,6 @@ class VelocityDeficit():
             self.logger.error(err_msg, stack_info=True)
             raise ValueError(err_msg)
         self._use_yaw_added_recovery = value
-        self.calculate_VW_velocities = self.use_yaw_added_recovery
 
     @property
     def yaw_recovery_alpha(self):

@@ -1,16 +1,17 @@
-# Copyright 2019 NREL
+# Copyright 2020 NREL
 
-# Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-# this file except in compliance with the License. You may obtain a copy of the
-# License at http://www.apache.org/licenses/LICENSE-2.0
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at http://www.apache.org/licenses/LICENSE-2.0
 
-# Unless required by applicable law or agreed to in writing, software distributed
-# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-# CONDITIONS OF ANY KIND, either express or implied. See the License for the
-# specific language governing permissions and limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
 
 from ..utilities import Vec3
-# from .wake_combination import WakeCombination
+from ..utilities import setup_logger
 from .flow_field import FlowField
 from .wind_map import WindMap
 from .turbine_map import TurbineMap
@@ -88,7 +89,8 @@ class Farm():
                 layout_x, layout_y,
                 [copy.deepcopy(turbine) for ii in range(len(layout_x))]),
             wake=wake,
-            wind_map=self.wind_map)
+            wind_map=self.wind_map,
+            specified_wind_height=properties["specified_wind_height"])
 
     def __str__(self):
         return \
@@ -118,7 +120,8 @@ class Farm():
         """
 
         valid_wake_models = [
-            'curl', 'gauss', 'ishihara', 'jensen', 'multizone', 'blondel', 'gauss', 'merge_gauss', 'legacy_gauss'
+             'jensen', 'multizone', 'gauss', 'gauss_legacy',
+             'blondel', 'ishihara_qian', 'curl'
         ]
         if wake_model not in valid_wake_models:
             # TODO: logging
@@ -129,8 +132,9 @@ class Farm():
         self.flow_field.wake.velocity_model = wake_model
         if wake_model == 'jensen' or wake_model == 'multizone':
             self.flow_field.wake.deflection_model = 'jimenez'
-        elif wake_model == 'blondel' or wake_model == 'ishihara' or 'gauss' in wake_model:
-            self.flow_field.wake.deflection_model = 'gauss'
+        elif wake_model == 'blondel' or wake_model == 'ishihara_qian' \
+            or 'gauss' in wake_model:
+                self.flow_field.wake.deflection_model = 'gauss'
         else:
             self.flow_field.wake.deflection_model = wake_model
 

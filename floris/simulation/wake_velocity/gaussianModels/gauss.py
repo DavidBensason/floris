@@ -10,24 +10,17 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from ....utilities import cosd, sind, tand
-from ..base_velocity_deficit import VelocityDeficit
 import numpy as np
+from scipy.special import gamma
+from ....utilities import cosd, sind, tand, setup_logger
+from ..base_velocity_deficit import VelocityDeficit
+from .gaussian_model_ish import GaussianModel
 
+""""
+Full doc string to be written
 
-class Gauss(VelocityDeficit):
-    """
-    Gauss is a wake velocity subclass that contains objects related to the
-    Gaussian wake model.
-
-    Gauss is a subclass of
-    :py:class:`floris.simulation.wake_velocity.WakeVelocity` that is
-    used to compute the wake velocity deficit based on the Gaussian
-    wake model with self-similarity. The Gaussian wake model includes a
-    Gaussian wake velocity deficit profile in the y and z directions
-    and includes the effects of ambient turbulence, added turbulence
-    from upstream wakes, as well as wind shear and wind veer. For more
-    information about the Gauss wake model theory, see:
+Short Version: New Gauss Class replaces the Gauss Version now in gauss_legacy
+This version merges the previous gaussian wake model based on:
 
     [1] Abkar, M. and Porte-Agel, F. "Influence of atmospheric stability on
     wind-turbine wakes: A large-eddy simulation study." *Physics of
@@ -46,110 +39,45 @@ class Gauss(VelocityDeficit):
     [5] Dilip, D. and Porte-Agel, F. "Wind turbine wake mitigation through
     blade pitch offset." *Energies*, 2017.
 
+And merges it with models described in 
+
     [6] Blondel, F. and Cathelain, M. "An alternative form of the
     super-Gaussian wind turbine wake model." *Wind Energy Science Disucssions*,
     2020.
 
-    Args:
-        parameter_dictionary: A dictionary as generated from the
-            input_reader; it should have the following key-value pairs:
+(Note this model [6] is implemented more directly in blondel.py)
 
-            -   **turbulence_intensity**: A dictionary containing the
-                following key-value pairs used to calculate wake-added
-                turbulence intensity from an upstream turbine, using
-                the approach of Crespo, A. and Herna, J. "Turbulence
-                characteristics in wind-turbine wakes." *J. Wind Eng
-                Ind Aerodyn*. 1996.:
+The model merges the Bastankhah/Niayifar/Porte-Agel with that of Blondel and includes
+additional corrections to provide better consistency with previous models and SOWFA
+results
 
-                -   **initial**: A float that is the initial ambient
-                    turbulence intensity, expressed as a decimal
-                    fraction.
-                -   **constant**: A float that is the constant used to
-                    scale the wake-added turbulence intensity.
-                -   **ai**: A float that is the axial induction factor
-                    exponent used in in the calculation of wake-added
-                    turbulence.
-                -   **downstream**: A float that is the exponent
-                    applied to the distance downtream of an upstream
-                    turbine normalized by the rotor diameter used in
-                    the calculation of wake-added turbulence.
 
-            -   **gauss**: A dictionary containing the following
-                key-value pairs:
-                -   **ka**: A float that is a parameter used to
-                    determine the linear relationship between the
-                    turbulence intensity and the width of the Gaussian
-                    wake shape.
-                -   **kb**: A float that is a second parameter used to
-                    determine the linear relationship between the
-                    turbulence intensity and the width of the Gaussian
-                    wake shape.
-                -   **alpha**: A float that is a parameter that
-                    determines the dependence of the downstream
-                    boundary between the near wake and far wake region
-                    on the turbulence intensity.
-                -   **beta**: A float that is a parameter that
-                    determines the dependence of the downstream
-                    boundary between the near wake and far wake region
-                    on the turbine's induction factor.
+"""
 
-    Returns:
-        An instantiated Gauss object.
-    """
+class Gauss(VelocityDeficit):
+    default_parameters = {
+        'ka': 0.38,
+        'kb': 0.004,
+        'alpha': 0.58,
+        'beta': 0.077
+    }
 
     def __init__(self, parameter_dictionary):
         super().__init__(parameter_dictionary)
+        self.logger = setup_logger(name=__name__)
+
         self.model_string = "gauss"
-        model_dictionary = self._get_model_dict()
+        model_dictionary = self._get_model_dict(__class__.default_parameters)
 
         # wake expansion parameters
-        self.ka = float(model_dictionary["ka"])
-        self.kb = float(model_dictionary["kb"])
+        self.ka = model_dictionary["ka"]
+        self.kb = model_dictionary["kb"]
 
-        # near wake parameters
-        self.alpha = float(model_dictionary["alpha"])
-        self.beta = float(model_dictionary["beta"])
+        # near wake / far wake boundary parameters
+        self.alpha = model_dictionary["alpha"]
+        self.beta = model_dictionary["beta"]
 
-    def function(self, x_locations, y_locations, z_locations, turbine,
-                 turbine_coord, deflection_field, flow_field):
-        """
-        Using the Gaussian wake model, this method calculates and
-        returns the wake velocity deficits, caused by the specified
-        turbine, relative to the freestream velocities at the grid of
-        points comprising the wind farm flow field.
-        Args:
-            x_locations: An array of floats that contains the
-                streamwise direction grid coordinates of the flow field
-                domain (m).
-            y_locations: An array of floats that contains the grid
-                coordinates of the flow field domain in the direction
-                normal to x and parallel to the ground (m).
-            z_locations: An array of floats that contains the grid
-                coordinates of the flow field domain in the vertical
-                direction (m).
-            turbine: A :py:obj:`floris.simulation.turbine` object that
-                represents the turbine creating the wake.
-            turbine_coord: A :py:obj:`floris.utilities.Vec3` object
-                containing the coordinate of the turbine creating the
-                wake (m).
-            deflection_field: An array of floats that contains the
-                amount of wake deflection in meters in the y direction
-                at each grid point of the flow field.
-            flow_field: A :py:class:`floris.simulation.flow_field` 
-                object containing the flow field information for the 
-                wind farm.
-        Returns:
-            Three arrays of floats that contain the wake velocity
-            deficit in m/s created by the turbine relative to the
-            freestream velocities for the u, v, and w components,
-            aligned with the x, y, and z directions, respectively. The
-            three arrays contain the velocity deficits at each grid
-            point in the flow field.
-        """
-        
-        # veer (degrees)
-        veer = flow_field.wind_veer
-
+    def function(self, x_locations, y_locations, z_locations, turbine, turbine_coord, deflection_field, flow_field):
         # added turbulence model
         TI = turbine.current_turbulence_intensity
 
@@ -163,76 +91,46 @@ class Gauss(VelocityDeficit):
         # wake deflection
         delta = deflection_field
 
-        # initial velocity deficits
-        uR = U_local * Ct / (2.0 * (1 - np.sqrt(1 - (Ct))))
-        u0 = U_local * np.sqrt(1 - Ct)
+        xR, _ = GaussianModel.mask_upstream_wake(y_locations, turbine_coord, yaw)
 
-        # initial Gaussian wake expansion
-        sigma_z0 = D * 0.5 * np.sqrt(uR / (U_local + u0))
-        sigma_y0 = sigma_z0 * cosd(yaw) * cosd(veer)
+        # Compute scaled variables (Eq 1, pp 3 of ref. [1] in docstring)
+        x_tilde = (x_locations - turbine_coord.x1) / D
 
-        # quantity that determines when the far wake starts
-        x0 = D * (cosd(yaw) * (1 + np.sqrt(1 - Ct))) / (np.sqrt(2) \
-            * (4 * self.alpha * TI + 2 * self.beta * (1 - np.sqrt(1 - Ct)))) \
-            + turbine_coord.x1
+        # Over-ride the values less than xR, these go away anyway
+        x_tilde[x_locations < xR] = 0 #np.mean(x_tilde[x_locations >= xR] )
 
-        # wake expansion parameters
-        ky = self.ka * TI + self.kb
-        kz = self.ka * TI + self.kb
+        r_tilde = np.sqrt( (y_locations - turbine_coord.x2 - delta)**2 + (z_locations - HH)**2, dtype=np.float128) / D
 
-        # compute velocity deficit
-        yR = y_locations - turbine_coord.x2
-        xR = yR * tand(yaw) + turbine_coord.x1
+        beta = ( 1 + np.sqrt(1 - Ct * cosd(yaw)) )  /  (2 * ( 1 + np.sqrt(1 - Ct) ) )
 
-        # velocity deficit in the near wake
-        sigma_y = (((x0 - xR) - (x_locations - xR)) / (x0 - xR)) * 0.501 * \
-            D * np.sqrt(Ct / 2.) + ((x_locations - xR) / (x0 - xR)) * sigma_y0
-        sigma_z = (((x0 - xR) - (x_locations - xR)) / (x0 - xR)) * 0.501 * \
-            D * np.sqrt(Ct / 2.) + ((x_locations - xR) / (x0 - xR)) * sigma_z0
+        a_s = self.ka # Force equality to previous parameters to reduce new parameters
+        b_s = self.kb # Force equality to previous parameters to reduce new parameters
+        c_s = 0.5
+        
+        x0 = D * ( cosd(yaw) * (1 + np.sqrt(1 - Ct))) / (np.sqrt(2) * (4 * self.alpha * TI + 2 * self.beta * (1 - np.sqrt(1 - Ct)))) # + turbine_coord.x1
+        sigma_tilde = (a_s * TI + b_s) * (x_tilde - x0/D) + c_s * np.sqrt(beta)
+        
+        # If not subtracting x0 as above, but I think equivalent
+        # sigma_tilde = (a_s * TI + b_s) * (x_tilde - 0) + c_s * np.sqrt(beta)
+        # sigma_tilde = sigma_tilde  - (a_s * TI + b_s) * x0/D
 
-        sigma_y[x_locations < xR] = 0.5 * D
-        sigma_z[x_locations < xR] = 0.5 * D
+        a_f = 1.5 * 3.11
+        b_f = 0.65 * -0.68
+        c_f = 2.0
+        n = a_f * np.exp(b_f * x_tilde) + c_f
 
-        a = (cosd(veer)**2) / (2 * sigma_y**2) + \
-            (sind(veer)**2) / (2 * sigma_z**2)
-        b = -(sind(2 * veer)) / (4 * sigma_y**2) + \
-            (sind(2 * veer)) / (4 * sigma_z**2)
-        c = (sind(veer)**2) / (2 * sigma_y**2) + \
-            (cosd(veer)**2) / (2 * sigma_z**2)
-        totGauss = np.exp(-(a * ((y_locations - turbine_coord.x2) - delta)**2 \
-                - 2 * b * ((y_locations - turbine_coord.x2) - delta) \
-                * ((z_locations - HH)) + c * ((z_locations - HH))**2))
+        a1 = 2**(2 / n - 1)
+        a2 = 2**(4 / n - 2)
+        
+        # These two lines seem to be equivalent
+        C = a1 - np.sqrt(a2 - (n * Ct * cosd(yaw) / (16.0 * gamma(2/n) * np.sign(sigma_tilde) * np.abs(sigma_tilde)**(4/n) ) ) )
+        # C = a1 - np.sqrt(a2 - (n * Ct * cosd(yaw) / (16.0 * gamma(2/n) * sigma_tilde**(4/n) ) ) )
 
-        velDef = (U_local * (1 - np.sqrt(1 - ((Ct * cosd(yaw)) \
-                / (8.0 * sigma_y * sigma_z / D**2)))) * totGauss)
+        # Compute wake velocity (Eq 1, pp 3 of ref. [1] in docstring)
+        velDef = GaussianModel.gaussian_function(U_local, C, r_tilde, n, sigma_tilde)
         velDef[x_locations < xR] = 0
-        velDef[x_locations > x0] = 0
 
-        # wake expansion in the lateral (y) and the vertical (z)
-        sigma_y = ky * (x_locations - x0) + sigma_y0
-        sigma_z = kz * (x_locations - x0) + sigma_z0
-
-        sigma_y[x_locations < x0] = sigma_y0[x_locations < x0]
-        sigma_z[x_locations < x0] = sigma_z0[x_locations < x0]
-
-        # velocity deficit outside the near wake
-        a = (cosd(veer)**2) / (2 * sigma_y**2) + \
-            (sind(veer)**2) / (2 * sigma_z**2)
-        b = -(sind(2 * veer)) / (4 * sigma_y**2) + \
-            (sind(2 * veer)) / (4 * sigma_z**2)
-        c = (sind(veer)**2) / (2 * sigma_y**2) + \
-            (cosd(veer)**2) / (2 * sigma_z**2)
-        totGauss = np.exp(-(a * ((y_locations - turbine_coord.x2) - delta)**2 \
-                - 2 * b * ((y_locations - turbine_coord.x2) - delta) \
-                * ((z_locations - HH)) + c * ((z_locations - HH))**2))
-
-        # compute velocities in the far wake
-        velDef1 = (U_local * (1 - np.sqrt(1 - ((Ct * cosd(yaw)) \
-                / (8.0 * sigma_y * sigma_z / D**2)))) * totGauss)
-        velDef1[x_locations < x0] = 0
-
-        return np.sqrt(velDef**2 + velDef1**2), np.zeros(np.shape(velDef)), \
-                       np.zeros(np.shape(velDef))
+        return velDef, np.zeros(np.shape(velDef)), np.zeros(np.shape(velDef))
 
     @property
     def ka(self):
@@ -248,12 +146,18 @@ class Gauss(VelocityDeficit):
 
     @ka.setter
     def ka(self, value):
-        if type(value) is float:
-            self._ka = value
-        elif type(value) is int:
-            self._ka = float(value)
-        else:
-            raise ValueError("Invalid value given for ka: {}".format(value))
+        if type(value) is not float:
+            err_msg = ('Invalid value type given for ka: {}, ' + \
+                       'expected float.').format(value)
+            self.logger.error(err_msg, stack_info=True)
+            raise ValueError(err_msg)
+        self._ka = value
+        if value != __class__.default_parameters['ka']:
+            self.logger.info(
+                ('Current value of ka, {0}, is not equal to tuned ' +
+                'value of {1}.').format(
+                    value, __class__.default_parameters['ka'])
+                )
 
     @property
     def kb(self):
@@ -269,12 +173,18 @@ class Gauss(VelocityDeficit):
 
     @kb.setter
     def kb(self, value):
-        if type(value) is float:
-            self._kb = value
-        elif type(value) is int:
-            self._kb = float(value)
-        else:
-            raise ValueError("Invalid value given for kb: {}".format(value))
+        if type(value) is not float:
+            err_msg = ('Invalid value type given for kb: {}, ' + \
+                       'expected float.').format(value)
+            self.logger.error(err_msg, stack_info=True)
+            raise ValueError(err_msg)
+        self._kb = value
+        if value != __class__.default_parameters['kb']:
+            self.logger.info(
+                ('Current value of kb, {0}, is not equal to tuned ' +
+                'value of {1}.').format(
+                    value, __class__.default_parameters['kb'])
+                )
 
     @property
     def alpha(self):
@@ -291,12 +201,18 @@ class Gauss(VelocityDeficit):
 
     @alpha.setter
     def alpha(self, value):
-        if type(value) is float:
-            self._alpha = value
-        elif type(value) is int:
-            self._alpha = float(value)
-        else:
-            raise ValueError("Invalid value given for alpha: {}".format(value))
+        if type(value) is not float:
+            err_msg = ('Invalid value type given for alpha: {}, ' + \
+                       'expected float.').format(value)
+            self.logger.error(err_msg, stack_info=True)
+            raise ValueError(err_msg)
+        self._alpha = value
+        if value != __class__.default_parameters['alpha']:
+            self.logger.info(
+                ('Current value of alpha, {0}, is not equal to tuned ' +
+                'value of {1}.').format(
+                    value, __class__.default_parameters['alpha'])
+                )
 
     @property
     def beta(self):
@@ -313,9 +229,15 @@ class Gauss(VelocityDeficit):
 
     @beta.setter
     def beta(self, value):
-        if type(value) is float:
-            self._beta = value
-        elif type(value) is int:
-            self._beta = float(value)
-        else:
-            raise ValueError("Invalid value given for beta: {}".format(value))
+        if type(value) is not float:
+            err_msg = ('Invalid value type given for beta: {}, ' + \
+                       'expected float.').format(value)
+            self.logger.error(err_msg, stack_info=True)
+            raise ValueError(err_msg)
+        self._beta = value
+        if value != __class__.default_parameters['beta']:
+            self.logger.info(
+                ('Current value of beta, {0}, is not equal to tuned ' +
+                'value of {1}.').format(
+                    value, __class__.default_parameters['beta'])
+                )

@@ -15,6 +15,7 @@ from floris.simulation import Floris
 from floris.simulation import TurbineMap, Turbine
 from .flow_data import FlowData
 from ..utilities import Vec3
+from ..utilities import setup_logger
 import copy
 from scipy.stats import norm
 from floris.simulation import WindMap
@@ -30,7 +31,13 @@ class FlorisInterface():
 
     def __init__(self, input_file=None, input_dict=None):
         if input_file is None and input_dict is None:
-            raise ValueError('Input file or dictionary must be supplied')
+            self.logger = setup_logger(name=__name__,
+                logging_dict={'console': {'enable': True, 'level': 'INFO'},
+                'file': {'enable': False, 'level': 'INFO'} })
+            err_msg = 'Input file or dictionary must be supplied'
+            self.logger.error(err_msg, stack_info=True)
+            raise ValueError(err_msg)
+            self.logger = setup_logger(name=__name__)
         self.input_file = input_file
         self.floris = Floris(input_file=input_file, input_dict=input_dict)
 
@@ -133,14 +140,25 @@ class FlorisInterface():
             turbine_map = None
 
             if wind_speed is not None:
+
+                # If not a list, convert to list
+                # TODO: What if tuple? Or
+                wind_speed = wind_speed if isinstance(wind_speed, list) else [wind_speed]
+
                 wind_map.input_speed = wind_speed
                 wind_map.calculate_wind_speed()
 
             if turbulence_intensity is not None:
+                # If not a list, convert to list
+                # TODO: What if tuple? Or
+                turbulence_intensity = turbulence_intensity if isinstance(turbulence_intensity, list) else [turbulence_intensity]
                 wind_map.input_ti = turbulence_intensity
                 wind_map.calculate_turbulence_intensity()
 
             if wind_direction is not None:
+                # If not a list, convert to list
+                # TODO: What if tuple? Or
+                wind_direction = wind_direction if isinstance(wind_direction, list) else [wind_direction]
                 wind_map.input_direction = wind_direction
                 wind_map.calculate_wind_direction()
 
@@ -175,9 +193,9 @@ class FlorisInterface():
                 Defaults to z.
             x3_value (float, optional): value of normal vector to slice through
                 Defaults to 100.
-            x1_bounds (tuple, optional): limits of output array.
+            x1_bounds (tuple, optional): limits of output array. (in m)
                 Defaults to None.
-            x2_bounds (tuple, optional): limits of output array.
+            x2_bounds (tuple, optional): limits of output array. (in m)
                 Defaults to None.
 
         Returns:
@@ -291,6 +309,9 @@ class FlorisInterface():
         # Limit to requested points
         df = df[df.x1.isin(x1_array)]
         df = df[df.x2.isin(x2_array)]
+
+        # Sort values of df to make sure plotting is acceptable
+        df = df.sort_values(['x2','x1']).reset_index(drop=True)
 
         # Return the dataframe
         return df
@@ -445,9 +466,9 @@ class FlorisInterface():
                 Defaults to 200.
             x2_resolution (float, optional): output array resolution.
                 Defaults to 200.
-            x1_bounds (tuple, optional): limits of output array.
+            x1_bounds (tuple, optional): limits of output array. (in m)
                 Defaults to None.
-            x2_bounds (tuple, optional): limits of output array.
+            x2_bounds (tuple, optional): limits of output array. (in m)
                 Defaults to None.
 
         Returns:
@@ -955,8 +976,71 @@ class FlorisInterface():
             self.floris.farm.turbines[t_idx].change_turbine_parameters(
                 turbine_change_dict)
 
+        # Make sure to update turbine map in case hub-height has changed
+        self.floris.farm.flow_field.turbine_map.update_hub_heights()
+
+        # Rediscritize the flow field grid
+        self.floris.farm.flow_field._discretize_turbine_domain()
+
         # Finish by re-initalizing the flow field
         self.reinitialize_flow_field()
+
+    def set_gch(self, enable=True):
+        """
+        Enable or disable GCH's two components
+        """
+        self.set_gch_yaw_added_recovery(enable)
+        self.set_gch_secondary_steering(enable)
+
+    def set_gch_yaw_added_recovery(self, enable=True):
+        """
+        Enable/Disable GCH YAR
+        And control state of calcVW based on this and ss setting
+        """
+        model_params = self.get_model_parameters()
+        use_secondary_steering = model_params['Wake Deflection Parameters']['use_secondary_steering'] 
+
+        if enable:
+            model_params['Wake Velocity Parameters']['use_yaw_added_recovery'] = True
+
+            # If enabling be sure calc vw is on
+            model_params['Wake Velocity Parameters']['calculate_VW_velocities'] = True
+            
+        if not enable:
+            model_params['Wake Velocity Parameters']['use_yaw_added_recovery'] = False
+
+            # If secondary steering is also off, disable calculate_VW_velocities
+            if not use_secondary_steering:
+                 model_params['Wake Velocity Parameters']['calculate_VW_velocities'] = False
+
+        self.set_model_parameters(model_params)
+        self.reinitialize_flow_field()
+
+
+    def set_gch_secondary_steering(self, enable=True):
+        """
+        Enable/Disable GCH SS
+        And control state of calcVW based on this and yar setting
+        """
+        model_params = self.get_model_parameters()
+        use_yaw_added_recovery = model_params['Wake Velocity Parameters']['use_yaw_added_recovery'] 
+
+        if enable:
+            model_params['Wake Deflection Parameters']['use_secondary_steering'] = True
+
+            # If enabling be sure calc vw is on
+            model_params['Wake Velocity Parameters']['calculate_VW_velocities'] = True
+            
+        if not enable:
+            model_params['Wake Deflection Parameters']['use_secondary_steering'] = False
+
+            # If yar is also off, disable calculate_VW_velocities
+            if not use_yaw_added_recovery:
+                 model_params['Wake Velocity Parameters']['calculate_VW_velocities'] = False
+
+        self.set_model_parameters(model_params)
+        self.reinitialize_flow_field()
+            
 
     @property
     def layout_x(self):
@@ -1099,13 +1183,14 @@ class FlorisInterface():
         set_params(self, params, verbose)
 
 
-    def show_flow_field(self):
+    def show_flow_field(self, ax=None):
         # Get horizontal plane at default height (hub-height)
         hor_plane = self.get_hor_plane()
 
         # Plot and show
-        fig, ax = plt.subplots()
-        visualize_cut_plane(hor_plane, ax=ax)
+        if ax is None:
+            fig, ax = plt.subplots()
+        wfct.visualization.visualize_cut_plane(hor_plane, ax=ax)
         plt.show()
 
     # TODO
