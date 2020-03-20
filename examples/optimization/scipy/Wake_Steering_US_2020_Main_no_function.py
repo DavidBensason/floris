@@ -40,8 +40,6 @@ fi = wfct.floris_interface.FlorisInterface(
     os.path.join(file_dir, '../../example_input.json')
 )
 
-asd
-        
 # Instantiate the FLORIS object
 #file_dir = os.path.dirname(os.path.abspath(__file__))
 #fi = wfct.floris_interface.FlorisInterface(
@@ -49,16 +47,16 @@ asd
 #)
 
 #Define Wake Model and input parameters 
-fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = False
-fi.floris.farm.wake.deflection_model.use_secondary_steering = False
+#fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = False
+#fi.floris.farm.wake.deflection_model.use_secondary_steering = False
 
-fi.floris.farm.flow_field.wake.deflection_model.deflection_multiplier = 1.2
-fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
+#fi.floris.farm.flow_field.wake.deflection_model.deflection_multiplier = 1.2
+#fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
 
 # Define wind farm coordinates and layout
 #farm_name = "Jericho Mountain"
 mf =pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
-kf = (mf.loc[mf['p_name'] == "Apple Blossom"])
+kf = (mf.loc[mf['p_name'] == "Carroll Area"])
 wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
 
 # Set wind farm to N_row x N_row grid with constant spacing 
@@ -129,6 +127,8 @@ hor_plane = fi.get_hor_plane(
 fig, ax = plt.subplots()
 wfct.visualization.visualize_cut_plane(hor_plane, ax=ax)
 ax.set_title("Baseline flow for U= 8 m/s  ,  Wind Direction= 270 $^\circ$")
+
+
 #layout_name = str(kf['p_name'].iloc[0]) + "_layout.jpg"
 #plt.savefig(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\layout_farms\{}'.format(layout_name))
 #ax.set_title('Baseline flow for U = 8 m/s, Wind Direction = 270$^\circ$')
@@ -141,7 +141,7 @@ print('Importing wind rose data...')
 
 # Create wind rose object and import wind rose dataframe using WIND Toolkit HSDS API.
 # Alternatively, load existing .csv fi.le with wind rose information.
-calculate_wind_rose = False
+calculate_wind_rose = True
 
 wind_rose = rose.WindRose()
 
@@ -168,7 +168,7 @@ else:
 
     #    file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
     #    df = wind_rose.load(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\pickle_files\{}'.format(file_name))
-
+qws
 # plot wind rose and save plots
 #file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
 #wind_rose.save(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\pickle_files\{}'.format(file_name))
@@ -332,6 +332,7 @@ elif Optimization_case == "Just_Unc":
 
 elif Optimization_case == "Just_Base":
     
+
     # Instantiate the Optimization object FOR NOW ASSUME TI WORKS
     yaw_opt = YawOptimizationWindRose(fi, df.wd, df.ws, df.ti,
                                    minimum_yaw_angle=min_yaw, 
