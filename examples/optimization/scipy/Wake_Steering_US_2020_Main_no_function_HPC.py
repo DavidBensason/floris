@@ -131,7 +131,7 @@ if __name__ == '__main__':
             turbine.power_thrust_table["thrust"] = ct_new
     
     # set min and max yaw offsets for optimization 
-    min_yaw = -25.0
+    min_yaw = 0
     max_yaw = 25.0
     
     # Define minimum and maximum wind speed for optimizing power. 
@@ -498,7 +498,7 @@ if __name__ == '__main__':
         power_rose.report()
         
         # Save farm report with designated name and path (this case  HPC)
-        report_farm_without_unc = kf['p_name'].iloc[0] + "_report_without_unc.png"
+        report_farm_without_unc = kf['p_name'].iloc[0] + "_report_without_unc_min0.png"
         plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_report/{}'.format(report_farm_without_unc))
         plt.show()
         
@@ -510,7 +510,7 @@ if __name__ == '__main__':
                                          'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
                                          'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                          index=[0]), ignore_index=True)
-        table_pickle = "Pickle_table_" + kf['p_name'].iloc[0] + "_without_unc"
+        table_pickle = "Pickle_table_" + kf['p_name'].iloc[0] + "_without_unc_min0"
         data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
         
         # Save final data as an image 
@@ -525,7 +525,7 @@ if __name__ == '__main__':
         # Render Table using above function 
         fig, ax = render_mpl_table(table_new)
         
-        table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_without_unc"
+        table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_without_unc_min0"
         plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
     
     
