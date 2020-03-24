@@ -176,7 +176,7 @@ if __name__ == '__main__':
         wfct.visualization.visualize_cut_plane(hor_plane, ax=ax)
         ax.set_title('Baseline flow for U = 8 m/s, Wind Direction = 270$^\circ$')
         
-        layout_name = str(kf) + "_layout_.png"
+        layout_name = str(zf) + "_layout_.png"
         plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_layout/{}'.format(layout_name))
         # ================================================================================
         print('Importing wind rose data...')
