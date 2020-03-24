@@ -134,7 +134,7 @@ if __name__ == '__main__':
             turbine.power_thrust_table["thrust"] = ct_new
     
     # set min and max yaw offsets for optimization 
-    min_yaw = 0
+    min_yaw = -25.0
     max_yaw = 25.0
     
     # Define minimum and maximum wind speed for optimizing power. 
