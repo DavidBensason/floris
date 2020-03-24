@@ -56,7 +56,7 @@ fi = wfct.floris_interface.FlorisInterface(
 # Define wind farm coordinates and layout
 #farm_name = "Jericho Mountain"
 mf =pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
-kf = (mf.loc[mf['p_name'] == "Carroll Area"])
+kf = (mf.loc[mf['p_name'] == "Rippey"])
 wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
 
 # Set wind farm to N_row x N_row grid with constant spacing 
@@ -92,8 +92,8 @@ for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
         T_Area = (np.pi* (D.iloc[count]**2)) /4
         U_turb_rated= (2* P_r.iloc[count]*(10**3)/ (C_p_rated * 1.225* T_Area))**(1/3)
         U_turb_norm =  tf.iloc[:,0] / U_turb_rated
-        cp_new = cturb.cp_for_any_turb(U_turb_norm)
-        ct_new = cturb.ct_for_any_turb(U_turb_norm)
+        cp_new = cturb.cp_for_any_turb(U_turb_norm,tf)
+        ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
         turbine.power_thrust_table["power"] = cp_new
         turbine.power_thrust_table["thrust"] = ct_new
 
@@ -141,7 +141,7 @@ print('Importing wind rose data...')
 
 # Create wind rose object and import wind rose dataframe using WIND Toolkit HSDS API.
 # Alternatively, load existing .csv fi.le with wind rose information.
-calculate_wind_rose = True
+calculate_wind_rose = False
 
 wind_rose = rose.WindRose()
 
@@ -168,7 +168,7 @@ else:
 
     #    file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
     #    df = wind_rose.load(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\pickle_files\{}'.format(file_name))
-qws
+
 # plot wind rose and save plots
 #file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
 #wind_rose.save(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\pickle_files\{}'.format(file_name))

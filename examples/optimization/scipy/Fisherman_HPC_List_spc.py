@@ -61,7 +61,7 @@ if __name__ == '__main__':
     wf_coordinate = [41.05, -70.2]
     
     # set min and max yaw offsets for optimization
-    min_yaw = 0
+    min_yaw = -25.0
     max_yaw = 25.0
     
     # Define minimum and maximum wind speed for optimizing power. 
@@ -77,11 +77,11 @@ if __name__ == '__main__':
     #)
     
     #Define Wake Model and input parameters 
-    fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = True
-    fi.floris.farm.wake.deflection_model.use_secondary_steering = True
+    #fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = True
+    #fi.floris.farm.wake.deflection_model.use_secondary_steering = True
     
-    fi.floris.farm.flow_field.wake.deflection_model.deflection_multiplier = 1.2
-    fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
+    #fi.floris.farm.flow_field.wake.deflection_model.deflection_multiplier = 1.2
+    #fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
     data = pd.DataFrame([])
     data1 = pd.DataFrame([])
     group= 1 ##Change for with next run 

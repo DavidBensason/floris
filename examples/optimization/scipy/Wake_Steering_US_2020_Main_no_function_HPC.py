@@ -80,11 +80,11 @@ if __name__ == '__main__':
     #)
     
     #Define Wake Model and input parameters 
-    fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = True
-    fi.floris.farm.wake.deflection_model.use_secondary_steering = True
+    #fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = True
+    #fi.floris.farm.wake.deflection_model.use_secondary_steering = True
     
-    fi.floris.farm.flow_field.wake.deflection_model.deflection_multiplier = 1.2
-    fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
+    #fi.floris.farm.flow_field.wake.deflection_model.deflection_multiplier = 1.2
+    #fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
     
     # Define wind farm coordinates and layout
     #farm_name = "Jericho Mountain"
@@ -125,8 +125,8 @@ if __name__ == '__main__':
             T_Area = (np.pi* (D.iloc[count]**2)) /4
             U_turb_rated= (2* P_r.iloc[count]*(10**3)/ (C_p_rated * 1.225* T_Area))**(1/3)
             U_turb_norm =  tf.iloc[:,0] / U_turb_rated
-            cp_new = cturb.cp_for_any_turb(U_turb_norm)
-            ct_new = cturb.ct_for_any_turb(U_turb_norm)
+            cp_new = cturb.cp_for_any_turb(U_turb_norm,tf)
+            ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
             turbine.power_thrust_table["power"] = cp_new
             turbine.power_thrust_table["thrust"] = ct_new
     

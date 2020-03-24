@@ -83,9 +83,10 @@ if __name__ == '__main__':
     #farm_name = "Jericho Mountain"
     
     
-    fl = pd.read_excel(r'/home/dbensaso/code/floris/examples/optimization/scipy/US_2020_Farm_List.xlsx') ### OR other where I put a list 
-    group = 1
-    dw = np.array(fl[int(group)])  #NUMBER FOR LIST TO RUN 
+    #fl = pd.read_excel(r'/home/dbensaso/code/floris/examples/optimization/scipy/US_2020_Farm_List.xlsx') ### OR other where I put a list 
+    group = str(2) +'_Pat'
+    #dw = np.array(fl[int(group)])  #NUMBER FOR LIST TO RUN 
+    dw = ['Kay Wind','Rock Falls']
     mf =pd.read_pickle('/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
     data = pd.DataFrame([])
     data1 = pd.DataFrame([]) #Only filled for Unc case
@@ -531,4 +532,5 @@ if __name__ == '__main__':
             raise SystemExit("None Valid Optimization Method Chosen")
         
         
+
 
