@@ -144,11 +144,11 @@ if __name__ == '__main__':
         P_r = 8000
         #hub_h = kf["t_hh"]
         
-        C_p_rated = 0.43
-        C_t_rated = 0.71
+        C_p_rated = 0.472991558
+        C_t_rated = 0.707315
         
         #Normalized wind speed for any turbine
-        tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_8MW')
+        tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_15MW')
         
         for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
                 turbine.rotor_diameter = int(i)
