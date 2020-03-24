@@ -13,6 +13,7 @@ import floris.tools.cut_plane as cp
 from floris.tools.optimization.scipy.optimization import YawOptimizationWindRoseParallel
 import floris.tools.wind_rose as rose
 import floris.tools.power_rose as pr
+import WakeSteering_US.cp_for_any_turb as cturb
 import numpy as np
 import pandas as pd
 import os
@@ -122,17 +123,19 @@ if __name__ == '__main__':
         N_turb = len(layout_x)
         
         
-        
+        P_r = 8000
+        C_p_rated = 0.472991558
+        C_t_rated = 0.707315
         fi.reinitialize_flow_field(layout_array=(layout_x, layout_y),wind_direction=[270.0],wind_speed=[8.0])
         fi.calculate_wake()
         
-        cp_8MW= [0,0,0,0,0.13,0.3,0.37,0.39,0.41,0.42,0.43,0.43,0.44,0.44,0.44,0.44,0.44,0.43,0.42,0.39,0.35,
-                 0.31,0.28,0.25,0.23,0.2,0.18,0.17,0.15,0.14,0.13,0.12,0.11,0.1,0.09,0.08,0.08,0.07,0.07,0.06,
-                 0.06,0.05,0.05,0.05,0.04,0.04,0.04,0.0]
+        #cp_8MW= [0,0,0,0,0.13,0.3,0.37,0.39,0.41,0.42,0.43,0.43,0.44,0.44,0.44,0.44,0.44,0.43,0.42,0.39,0.35,
+         #        0.31,0.28,0.25,0.23,0.2,0.18,0.17,0.15,0.14,0.13,0.12,0.11,0.1,0.09,0.08,0.08,0.07,0.07,0.06,
+          #       0.06,0.05,0.05,0.05,0.04,0.04,0.04,0.0]
         
-        ct_8MW= [1.18,1.1,1.03,0.97,0.92,0.88,0.85,0.83,0.82,0.81,0.8,0.79,0.78,0.77,0.76,0.75,0.73,0.71,0.67,
-                 0.6,0.52,0.45,0.39,0.34,0.3,0.27,0.24,0.22,0.19,0.18,0.16,0.15,0.14,0.13,0.12,0.11,0.1,0.09,
-                 0.09,0.08,0.08,0.07,0.07,0.06,0.06,0.06,0.05,0.05]
+        #ct_8MW= [1.18,1.1,1.03,0.97,0.92,0.88,0.85,0.83,0.82,0.81,0.8,0.79,0.78,0.77,0.76,0.75,0.73,0.71,0.67,
+        #         0.6,0.52,0.45,0.39,0.34,0.3,0.27,0.24,0.22,0.19,0.18,0.16,0.15,0.14,0.13,0.12,0.11,0.1,0.09,
+         #        0.09,0.08,0.08,0.07,0.07,0.06,0.06,0.06,0.05,0.05]
         
         #fi.floris.farm.flow_field.turbine_map.turbines.power_thrust_table["power"] = cp_8MW
         #fi.floris.farm.flow_field.turbine_map.turbines.power_thrust_table["thrust"] = ct_8MW
@@ -141,11 +144,15 @@ if __name__ == '__main__':
         
         #hub_h= 109
         #Diam= 164
+        tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_15MW')
         for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
                 turbine.rotor_diameter = D
                 turbine.hub_height = 109
-                cp_new = cp_8MW
-                ct_new = ct_8MW
+                T_Area = (np.pi* (int(D)**2)) /4
+                U_turb_rated= (2* P_r*(10**3)/ (C_p_rated * 1.225* T_Area))**(1/3)
+                U_turb_norm =  tf.iloc[:,0] / U_turb_rated
+                cp_new = cturb.cp_for_any_turb(U_turb_norm,tf)
+                ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
                 turbine.power_thrust_table["power"] = cp_new
                 turbine.power_thrust_table["thrust"] = ct_new
         
