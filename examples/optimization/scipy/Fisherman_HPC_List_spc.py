@@ -61,7 +61,7 @@ if __name__ == '__main__':
     wf_coordinate = [41.05, -70.2]
     
     # set min and max yaw offsets for optimization
-    min_yaw = -25.0
+    min_yaw = 0
     max_yaw = 25.0
     
     # Define minimum and maximum wind speed for optimizing power. 
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     data = pd.DataFrame([])
     data1 = pd.DataFrame([])
     group= 1 ##Change for with next run 
-    y_n = [3,5,7,9,11,13,15]
+    y_n = [3,11,15]
     for i in y_n: 
         
         # Set wind farm to N_row x t_row grid with constant spacing 
