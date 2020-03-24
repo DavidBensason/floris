@@ -133,7 +133,7 @@ if __name__ == '__main__':
                 turbine.power_thrust_table["thrust"] = ct_new
         
         # set min and max yaw offsets for optimization 
-        min_yaw = -25.0
+        min_yaw = 0
         max_yaw = 25.0
         
         # Define minimum and maximum wind speed for optimizing power. 
@@ -196,7 +196,7 @@ if __name__ == '__main__':
         
         else:
             file_name = str(i) + "_Wind_Farm.p"
-            df = wind_rose.load(r'/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Saved_fig_data/pickle_files/{}'.format(file_name))
+            df = wind_rose.load(r'/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Saved_fig_data/pickle_files/{}'.format(file_name))
             
             #    file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
             #    df = wind_rose.load(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\pickle_files\{}'.format(file_name))
