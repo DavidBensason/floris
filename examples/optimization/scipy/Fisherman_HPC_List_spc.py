@@ -144,7 +144,7 @@ if __name__ == '__main__':
         
         #hub_h= 109
         #Diam= 164
-        tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_15MW')
+        tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_8MW')
         for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
                 turbine.rotor_diameter = D
                 turbine.hub_height = 109

@@ -148,7 +148,7 @@ if __name__ == '__main__':
         C_t_rated = 0.707315
         
         #Normalized wind speed for any turbine
-        tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_15MW')
+        tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_8MW')
         
         for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
                 turbine.rotor_diameter = int(i)
