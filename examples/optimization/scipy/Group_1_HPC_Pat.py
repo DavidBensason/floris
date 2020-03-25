@@ -197,7 +197,7 @@ if __name__ == '__main__':
         
         else:
             file_name = str(i) + "_Wind_Farm.p"
-            df = wind_rose.load(r'/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Saved_fig_data/pickle_files/{}'.format(file_name))
+            df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/{}'.format(file_name))
             
             #    file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
             #    df = wind_rose.load(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\pickle_files\{}'.format(file_name))
