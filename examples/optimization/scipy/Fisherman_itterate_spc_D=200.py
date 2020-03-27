@@ -507,7 +507,7 @@ if __name__ == '__main__':
         
             #Save final data as a pickle 
             
-            data = data.append(pd.DataFrame({'Farm Name': str(kf), '#Turbine': int(Num_Turb),'Turbine_D':int(i),'Turb_spc_D': int(spc_N),'Farm_lat':wf_coordinate[0], 'Farm_lon': wf_coordinate[1], 'AEP_No_Wake': power_rose.total_no_wake, 
+            data = data.append(pd.DataFrame({'Farm Name': str(kf), '#Turbine': int(Num_Turb),'Turbine_D':int(D),'Turb_spc_D': int(i),'Farm_lat':wf_coordinate[0], 'Farm_lon': wf_coordinate[1], 'AEP_No_Wake': power_rose.total_no_wake, 
                                              'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
                                              '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
                                              'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
