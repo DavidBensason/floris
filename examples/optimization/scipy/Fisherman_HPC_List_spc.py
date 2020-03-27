@@ -108,7 +108,7 @@ if __name__ == '__main__':
             spc_T= (1852/D) * (8/T_row) #(1Nautical mile/164)
            
         else: 
-            spc_N = y_n
+            spc_N = i
                     
         for j in range(N_row):
             for k in range(T_row):
