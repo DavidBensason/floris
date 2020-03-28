@@ -112,8 +112,8 @@ if __name__ == '__main__':
                     
         for j in range(N_row):
             for k in range(T_row):
-                layout_x.append(j*spc_N*i*math.cos(-45) - k*spc_N*i*math.cos(-45))
-                layout_y.append(j*spc_N*i*math.cos(-45) + k*spc_N*i*math.cos(-45))
+                layout_x.append(j*D*i*math.cos(-45) - k*D*i*math.cos(-45))
+                layout_y.append(j*D*i*math.cos(-45) + k*D*i*math.cos(-45))
         #remove option
         #remove= [len(layout_x)-15,len(layout_x)-8,len(layout_x)-7,len(layout_x)-4,len(layout_x)-3,len(layout_x)-1]
         #layout_x= [i for j, i in enumerate(layout_x) if j not in remove]
