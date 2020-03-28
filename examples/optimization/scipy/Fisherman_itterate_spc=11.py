@@ -84,13 +84,13 @@ if __name__ == '__main__':
     #fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
     data = pd.DataFrame([])
     data1 = pd.DataFrame([])
-    group= "D=200" ##Change for with next run 
-    D = 200 #input list of testsing diameters 
-    y_n = [3,11,15]
-    for i in y_n: 
+    group= "spc=11" ##Change for with next run 
+    D = [120,140,160,180,200,220] #input list of testsing diameters 
+    y_n = 11
+    for i in D: 
         
         # Set wind farm to N_row x t_row grid with constant spacing 
-        kf= "Fishermans_D="+ str(D) +"_spc=" + str(i)
+        kf= "Fishermans_D="+ str(i) +"_spc=" + str(y_n)
         zf = "Fishermans"
         
         #D = 164
@@ -108,12 +108,12 @@ if __name__ == '__main__':
             spc_T= (1852/i) * (8/T_row) #(1Nautical mile/164)
            
         else: 
-            spc_N = i
+            spc_N = y_n
                     
         for j in range(N_row):
             for k in range(T_row):
-                layout_x.append(j*D*i*math.cos(-45) - k*D*i*math.cos(-45))
-                layout_y.append(j*D*i*math.cos(-45) + k*D*i*math.cos(-45))
+                layout_x.append(j*y_n*i*math.cos(-45) - k*y_n*i*math.cos(-45))
+                layout_y.append(j*y_n*i*math.cos(-45) + k*y_n*i*math.cos(-45))
         #remove option
         #remove= [len(layout_x)-15,len(layout_x)-8,len(layout_x)-7,len(layout_x)-4,len(layout_x)-3,len(layout_x)-1]
         #layout_x= [i for j, i in enumerate(layout_x) if j not in remove]
@@ -151,9 +151,9 @@ if __name__ == '__main__':
         tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_8MW')
         
         for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
-                turbine.rotor_diameter = int(D)
+                turbine.rotor_diameter = int(i)
                 turbine.hub_height = 109
-                T_Area = (np.pi* (int(D)**2)) /4
+                T_Area = (np.pi* (int(i)**2)) /4
                 U_turb_rated= (2* P_r*(10**3)/ (C_p_rated * 1.225* T_Area))**(1/3)
                 U_turb_norm =  tf.iloc[:,0] / U_turb_rated
                 cp_new = cturb.cp_for_any_turb(U_turb_norm,tf)
@@ -507,7 +507,7 @@ if __name__ == '__main__':
         
             #Save final data as a pickle 
             
-            data = data.append(pd.DataFrame({'Farm Name': str(kf), '#Turbine': int(Num_Turb),'Turbine_D':int(D),'Turb_spc_D': int(i),'Farm_lat':wf_coordinate[0], 'Farm_lon': wf_coordinate[1], 'AEP_No_Wake': power_rose.total_no_wake, 
+            data = data.append(pd.DataFrame({'Farm Name': str(kf), '#Turbine': int(Num_Turb),'Turbine_D':int(i),'Turb_spc_D': int(y_n),'Farm_lat':wf_coordinate[0], 'Farm_lon': wf_coordinate[1], 'AEP_No_Wake': power_rose.total_no_wake, 
                                              'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
                                              '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
                                              'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
