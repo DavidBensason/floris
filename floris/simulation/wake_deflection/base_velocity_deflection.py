@@ -113,7 +113,7 @@ class VelocityDeflection():
             except:
                 # TODO: should this really be handled or let the error throw
                 # when this doesnt work?
-                print('ERROR', idx)
+                #print('ERROR', idx)
                 yaw_effective = 0.0
 
             return yaw_effective + turbine.yaw_angle

@@ -1042,10 +1042,10 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose):
                   without wake losses for each wind turbine (W).
         """
 
-        if ti is None:
-            print('Computing wind speed = '+str(ws)+' m/s, wind direction = '+str(wd)+' deg.')
-        else:
-            print('Computing wind speed = '+str(ws)+' m/s, wind direction = '+str(wd)+' deg, turbulence intensity = '+str(ti)+'.')
+        #if ti is None:
+        #    print('Computing wind speed = '+str(ws)+' m/s, wind direction = '+str(wd)+' deg.')
+        #else:
+        #    print('Computing wind speed = '+str(ws)+' m/s, wind direction = '+str(wd)+' deg, turbulence intensity = '+str(ti)+'.')
 
         # Find baseline power in FLORIS
 
@@ -1106,10 +1106,10 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose):
                   total wind farm power for each wind turbine (deg).
         """
 
-        if ti is None:
-            print('Computing wind speed = '+str(ws)+' m/s, wind direction = '+str(wd)+' deg.')
-        else:
-            print('Computing wind speed = '+str(ws)+' m/s, wind direction = '+str(wd)+' deg, turbulence intensity = '+str(ti)+'.')
+        #if ti is None:
+        #    print('Computing wind speed = '+str(ws)+' m/s, wind direction = '+str(wd)+' deg.')
+        #else:
+        #    print('Computing wind speed = '+str(ws)+' m/s, wind direction = '+str(wd)+' deg, turbulence intensity = '+str(ti)+'.')
 
         # Optimizing wake redirection control
 
