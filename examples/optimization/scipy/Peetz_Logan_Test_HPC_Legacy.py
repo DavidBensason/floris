@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Mar  3 10:13:20 2020
+Created on Thu Apr  2 09:51:01 2020
 
 @author: dbensaso
 """
+
 
 # Copyright 2019 NREL
 
@@ -39,11 +40,11 @@ if __name__ == '__main__':
     
     #CHOOSE EXAMPLE INPUT FILE
     # Instantiate the FLORIS object ---> OG example input with gch as the default before merge 4/1/2020
-    file_dir = os.path.dirname(os.path.abspath(__file__))
-    fi = wfct.floris_interface.FlorisInterface(os.path.join(file_dir, '../../example_input.json'))
+    #file_dir = os.path.dirname(os.path.abspath(__file__))
+    #fi = wfct.floris_interface.FlorisInterface(os.path.join(file_dir, '../../example_input.json'))
     
     #Alternative models 
-    #fi = wfct.floris_interface.FlorisInterface('/home/dbensaso/code/floris/examples_new/example_input.json')
+    fi = wfct.floris_interface.FlorisInterface('/home/dbensaso/code/floris/examples_new/example_input.json')
     #fi = wfct.floris_interface.FlorisInterface('/home/dbensaso/code/floris/examples_new/other_jsons/input_sowfa_tuning.json')
         
     # Function for plotting final tabular data as an image 
@@ -89,7 +90,7 @@ if __name__ == '__main__':
     mf =pd.read_pickle('/home/dbensaso/code/floris/examples/optimization/scipy/Peetz_Logan_Data')
     kf = (mf.loc[mf['p_name'] == "Peetz Table"])
     wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
-    kf1 = str(kf['p_name'].iloc[0])+ "_fixed_TI"
+    kf1 = str(kf['p_name'].iloc[0])+ "_Legacy"
     # Set wind farm to N_row x N_row grid with constant spacing 
     # (2 x 2 grid, 5 D spacing)
     D = fi.floris.farm.turbines[0].rotor_diameter
@@ -210,12 +211,12 @@ if __name__ == '__main__':
     
     #Plot Ti rose 
     #wind_rose.plot_wind_rose_ti() 
-    #ti_rose = kf['p_name'].iloc[0] + "_ti_rose.png"
+    #ti_rose = str(kf1) + "_ti_rose.png"
     #plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/ti_rose/{}'.format(ti_rose))
     
     #Plot Ti Winspeed dist.
     #wind_rose.plot_ti_ws() ## ALSO NOT WORKINg
-    #ti_ws = kf['p_name'].iloc[0] + "_ti_ws.png"
+    #ti_ws = str(kf1) + "_ti_ws.png"
     #plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/ti_ws/{}'.format(ti_ws))
     
     #ti_ws_name = str(kf['p_name'].iloc[0]) + "_ti_ws.jpg"
@@ -537,3 +538,4 @@ if __name__ == '__main__':
     
     
     
+
