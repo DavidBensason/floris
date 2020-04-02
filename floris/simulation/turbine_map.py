@@ -144,7 +144,91 @@ class TurbineMap():
             wake_list.append((turbine0,waked.sum()))
         
         return wake_list
+    
+    def new_number_of_wakes_iec(self, wd):
+        """
+        Returns a dictionary containing the list of turbines in 
+        TurbineMap and the total number of wakes from other turbines 
+        that interact with each turbine for the provided wind 
+        direction. Waked directions are determined using the formula 
+        in Figure A.1 in Annex A of the IEC 61400-12-1:2017 standard. 
 
+        Args:
+            wd (float): Wind direction for determining waked turbines.
+
+        Returns:
+            wake_list: List of Turbine objects and number of upstream 
+            turbines waking them.
+        """
+        wake_list =[]
+        for i, (coord, turbine) in enumerate (self.items):
+            
+            for coord0, turbine0 in self.items:
+
+                other_turbines = [(coord, turbine) for coord,turbine in \
+                    self.items if turbine != turbine0]
+    
+                dists = np.array([np.hypot(coord.x1-coord0.x1,coord.x2-coord0.x2)/ \
+                    turbine.rotor_diameter for coord,turbine in other_turbines])
+    
+                angles = np.array([np.degrees(np.arctan2(coord.x1-coord0.x1, \
+                    coord.x2-coord0.x2)) for coord,turbine in self.items if \
+                    turbine != turbine0])
+    
+                # angles = (-angles - 90) % 360
+                
+                waked = dists <= 2.
+                turb_list = []
+                for k in waked:
+                    waked = k | ((dists <= 20.) & (np.abs(wrap_180(wd-angles)) \
+                        <= 0.5*(1.3*np.degrees(np.arctan(2.5/dists+0.15))+10)))
+                    turb_list.append(turbine0)
+                wake_list.append((i,turb_list))
+        
+        return wake_list
+    
+    def number_of_turbines_iec(self, wd): #ID WORKS AND CORRESPOINDING TOTAL 
+        """
+        Returns a dictionary containing the list of turbines in 
+        TurbineMap and the total number of wakes from other turbines 
+        that interact with each turbine for the provided wind 
+        direction. Waked directions are determined using the formula 
+        in Figure A.1 in Annex A of the IEC 61400-12-1:2017 standard. 
+
+        Args:
+            wd (float): Wind direction for determining waked turbines.
+
+        Returns:
+            wake_list: List of Turbine objects and number of upstream 
+            turbines waking them.
+        """
+
+        wake_list =[]
+        for i, (coord0, turbine0) in enumerate (self.items):
+            
+            other_turbines = [(coord, turbine) for coord,turbine in \
+                self.items]
+
+            dists = np.array([np.hypot(coord.x1-coord0.x1,coord.x2-coord0.x2)/ \
+                turbine.rotor_diameter for coord,turbine in other_turbines])
+
+            angles = np.array([np.degrees(np.arctan2(coord.x1-coord0.x1, \
+                coord.x2-coord0.x2)) for coord,turbine in self.items])
+            
+            
+            # angles = (-angles - 90) % 360
+            
+            waked = dists <= 2.
+            waked = waked | ((dists <= 20.) & (np.abs(wrap_180(wd-angles)) \
+                <= 0.5*(1.3*np.degrees(np.arctan(2.5/dists+0.15))+10)))
+            
+            #wake_turb = np.where(waked)
+            #for j, (turbine1) in enumerate (np.where(waked)):
+                #wake_true = np.where(waked)
+            wake_list.append(np.where(waked))
+            
+        return wake_list
+    
     @property
     def turbines(self):
         """
