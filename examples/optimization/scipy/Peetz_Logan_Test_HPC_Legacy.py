@@ -102,7 +102,7 @@ if __name__ == '__main__':
     #layout_y=layout_y1.tolist()
     
     N_turb = len(layout_x)
-    
+    fi.reinitialize_flow_field(turbulence_intensity=[0.08])
     fi.reinitialize_flow_field(layout_array=(layout_x, layout_y), wind_direction=[270.0],wind_speed=[8.0])
     fi.calculate_wake()
     
