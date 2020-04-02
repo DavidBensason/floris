@@ -108,7 +108,7 @@ if __name__ == '__main__':
             spc_T= (1852/i) * (8/T_row) #(1Nautical mile/164)
            
         else: 
-            spc_N = 1852
+            spc_N = 1852/int(i)
                     
         for j in range(N_row):
             for k in range(T_row):
@@ -144,8 +144,8 @@ if __name__ == '__main__':
         P_r = 8000
         #hub_h = kf["t_hh"]
         
-        C_p_rated = 0.43
-        C_t_rated = 0.71
+        C_p_rated = 0.472991558
+        C_t_rated = 0.707315
         
         #Normalized wind speed for any turbine
         tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_8MW')
@@ -517,11 +517,13 @@ if __name__ == '__main__':
             data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
             
             # Save final data as an image 
-            farm_data = [('AEP(GWh)',round(float(data.iloc[0]['AEP_No_Wake']),3), round(float(data.iloc[0]['AEP_Baseline']),3), round(float(data.iloc[0]['AEP_Opt']),3)), 
-                    ('%', '--', round(float(data.iloc[0]['%_Baseline']),3), round(float(data.iloc[0]['%_Opt']),3)), 
-                    ('%Wake_Loss', '--',round(float(data.iloc[0]['Wk_Loss_Baseline']),3), round(float(data.iloc[0]['Wk_Loss_Opt']),3)),
-                    ('%AEP_Gain', '--', '--', round(float(data.iloc[0]['AEP_Gain_Opt']),3)), 
-                    ('Loss_Reduced', '--', '--', round(float(data.iloc[0]['Loss_Red_Opt']),3))]
+            tabular = (data.loc[data['Turbine_D'] == i])
+            # Save final data as an image 
+            farm_data = [('AEP(GWh)',round(float(tabular.iloc[0]['AEP_No_Wake']),3), round(float(tabular.iloc[0]['AEP_Baseline']),3), round(float(tabular.iloc[0]['AEP_Opt']),3)), 
+                    ('%', '--', round(float(tabular.iloc[0]['%_Baseline']),3), round(float(tabular.iloc[0]['%_Opt']),3)), 
+                    ('%Wake_Loss', '--',round(float(data.iloc[0]['Wk_Loss_Baseline']),3), round(float(tabular.iloc[0]['Wk_Loss_Opt']),3)),
+                    ('%AEP_Gain', '--', '--', round(float(tabular.iloc[0]['AEP_Gain_Opt']),3)), 
+                    ('Loss_Reduced', '--', '--', round(float(tabular.iloc[0]['Loss_Red_Opt']),3))]
         
             table_new= pd.DataFrame(farm_data, columns = [' ','No-Wake','Baseline','Optimized'], index= None)
                 
