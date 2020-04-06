@@ -82,11 +82,11 @@ if __name__ == '__main__':
     #)
     
     #Define Wake Model and input parameters 
-    fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = True
-    fi.floris.farm.wake.deflection_model.use_secondary_steering = True
+    #fi.floris.farm.wake.velocity_model.use_yaw_added_recovery = True
+    #fi.floris.farm.wake.deflection_model.use_secondary_steering = True
     
-    fi.floris.farm.flow_field.wake.deflection_model.deflection_multiplier = 1.2
-    fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
+    #fi.floris.farm.flow_field.wake.deflection_model.deflection_multiplier = 1.2
+    #fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
     
     # Define wind farm coordinates and layout
     #farm_name = "Jericho Mountain"
