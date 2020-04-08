@@ -6,7 +6,7 @@ Created on Mon Mar 30 13:53:21 2020
 @author: dbensaso
 """
 
-rt matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import floris.tools as wfct
 import floris.tools.visualization as vis
 import floris.tools.cut_plane as cp
