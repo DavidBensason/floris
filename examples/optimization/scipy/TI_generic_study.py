@@ -183,8 +183,8 @@ if __name__ == '__main__':
         wfct.visualization.visualize_cut_plane(hor_plane, ax=ax)
         ax.set_title('Baseline flow for U = 8 m/s, Wind Direction = 270$^\circ$')
         
-        layout_name = str(kf) + "_layout_.png"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/TI_Study/{}'.format(layout_name))
+        #layout_name = str(kf) + "_layout_.png"
+        #plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/TI_Study/{}'.format(layout_name))
         # ================================================================================
         print('Importing wind rose data...')
         # ================================================================================
@@ -220,8 +220,8 @@ if __name__ == '__main__':
         #f
         # plot wind rose
         wind_rose.plot_wind_rose()
-        windrose_name = "TI_study_Wind_rose.png"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/TI_Study/{}'.format(windrose_name))
+        #windrose_name = "TI_study_Wind_rose.png"
+        #plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/TI_Study/{}'.format(windrose_name))
         #Plot ti rose
         #wind_rose.plot_wind_rose_ti()
         #ti_rose = str(zf) + "_ti_rose.png"
