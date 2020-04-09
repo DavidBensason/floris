@@ -505,7 +505,7 @@ if __name__ == '__main__':
             
             # Save farm report with designated name and path (this case  HPC)
             report_farm_without_unc = str(kf1) +"_report_without_unc.png"
-            plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_report/{}'.format(report_farm_without_unc))
+            plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/TI_Study/{}'.format(report_farm_without_unc))
             plt.show()
             
             #Save final data as a pickle 
@@ -517,7 +517,7 @@ if __name__ == '__main__':
                                              'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                              index=[0]), ignore_index=True)
             table_pickle = "Pickle_table_" + str(group) + "_without_unc"
-            data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
+            data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/TI_Study/{}'.format(table_pickle))
             
             # Save final data as an image 
             tabular = (data.loc[data['TI'] == i])
@@ -534,7 +534,7 @@ if __name__ == '__main__':
             fig, ax = render_mpl_table(table_new)
             
             table_image = "Table_Image_" + str(kf1)+ "_without_unc"
-            plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
+            plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/TI_Study/{}.png'.format(table_image))
         
         
         else: 
