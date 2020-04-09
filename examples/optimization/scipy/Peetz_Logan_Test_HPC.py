@@ -36,13 +36,16 @@ import os
 import six
 
 if __name__ == '__main__':
-
-    # Instantiate the FLORIS object
-    file_dir = os.path.dirname(os.path.abspath(__file__))
-    fi = wfct.floris_interface.FlorisInterface(
-        os.path.join(file_dir, '../../example_input.json')
-    )
     
+    #CHOOSE EXAMPLE INPUT FILE
+    # Instantiate the FLORIS object ---> OG example input with gch as the default before merge 4/1/2020
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+    fi = wfct.floris_interface.FlorisInterface(os.path.join(file_dir, '../../example_input.json'))
+    
+    #Alternative models 
+    #fi = wfct.floris_interface.FlorisInterface('/home/dbensaso/code/floris/examples_new/example_input.json')
+    #fi = wfct.floris_interface.FlorisInterface('/home/dbensaso/code/floris/examples_new/other_jsons/input_sowfa_tuning.json')
+        
     # Function for plotting final tabular data as an image 
     def render_mpl_table(table_new, col_width=2.8, row_height=0.625, font_size=14,
                          header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
@@ -86,7 +89,7 @@ if __name__ == '__main__':
     mf =pd.read_pickle('/home/dbensaso/code/floris/examples/optimization/scipy/Peetz_Logan_Data')
     kf = (mf.loc[mf['p_name'] == "Peetz Table"])
     wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
-    
+    kf1 = str(kf['p_name'].iloc[0])+ "_fixed_TI"
     # Set wind farm to N_row x N_row grid with constant spacing 
     # (2 x 2 grid, 5 D spacing)
     D = fi.floris.farm.turbines[0].rotor_diameter
@@ -98,7 +101,7 @@ if __name__ == '__main__':
     #layout_y=layout_y1.tolist()
     
     N_turb = len(layout_x)
-    
+    fi.reinitialize_flow_field(turbulence_intensity=[0.08])
     fi.reinitialize_flow_field(layout_array=(layout_x, layout_y), wind_direction=[270.0],wind_speed=[8.0])
     fi.calculate_wake()
     
@@ -156,8 +159,8 @@ if __name__ == '__main__':
     wfct.visualization.visualize_cut_plane(hor_plane, ax=ax)
     ax.set_title("Baseline flow for U= 8 m/s  ,  Wind Direction= 270 $^\circ$")
     
-    layout_name = str(kf['p_name'].iloc[0]) + "_layout.png"
-    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_layout/{}'.format(layout_name))
+    layout_name = str(kf1) + "_layout.png"
+    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Pat_Model_Comp/{}'.format(layout_name))
     #layout_name = str(kf['p_name'].iloc[0]) + "_layout.jpg"
     #plt.savefig(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\layout_farms\{}'.format(layout_name))
     #ax.set_title('Baseline flow for U = 8 m/s, Wind Direction = 270$^\circ$')
@@ -202,18 +205,18 @@ if __name__ == '__main__':
     
     #Plot Wind Rose
     wind_rose.plot_wind_rose()
-    windrose_name = str(kf['p_name'].iloc[0]) + "_Wind_rose.png"
-    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose/{}'.format(windrose_name))
+    windrose_name = str(kf1) + "_Wind_rose.png"
+    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Pat_Model_Comp/{}'.format(windrose_name))
     
     #Plot Ti rose 
-    wind_rose.plot_wind_rose_ti() 
-    ti_rose = kf['p_name'].iloc[0] + "_ti_rose.png"
-    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/ti_rose/{}'.format(ti_rose))
+    #wind_rose.plot_wind_rose_ti() 
+    #ti_rose = kf['p_name'].iloc[0] + "_ti_rose.png"
+    #plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/ti_rose/{}'.format(ti_rose))
     
     #Plot Ti Winspeed dist.
-    wind_rose.plot_ti_ws() ## ALSO NOT WORKINg
-    ti_ws = kf['p_name'].iloc[0] + "_ti_ws.png"
-    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/ti_ws/{}'.format(ti_ws))
+    #wind_rose.plot_ti_ws() ## ALSO NOT WORKINg
+    #ti_ws = kf['p_name'].iloc[0] + "_ti_ws.png"
+    #plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/ti_ws/{}'.format(ti_ws))
     
     #ti_ws_name = str(kf['p_name'].iloc[0]) + "_ti_ws.jpg"
     #plt.savefig(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\ti_ws_plots_farm\{}'.format(ti_ws_name))
@@ -457,7 +460,7 @@ if __name__ == '__main__':
     elif Optimization_case == "Just_Base":
         
         # Instantiate the Optimization object FOR NOW ASSUME TI WORKS
-        yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws, df.ti,
+        yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws,
                                        minimum_yaw_angle=min_yaw, 
                                        maximum_yaw_angle=max_yaw,
                                        minimum_ws=minimum_ws,
@@ -497,8 +500,8 @@ if __name__ == '__main__':
         power_rose.report()
         
         # Save farm report with designated name and path (this case  HPC)
-        report_farm_without_unc = kf['p_name'].iloc[0] + "_report_without_unc.png"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/farm_report/{}'.format(report_farm_without_unc))
+        report_farm_without_unc = str(kf1) + "_report_without_unc.png"
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Pat_Model_Comp/{}'.format(report_farm_without_unc))
         plt.show()
     
     
@@ -510,8 +513,8 @@ if __name__ == '__main__':
                                          'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
                                          'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                          index=[0]), ignore_index=True)
-        table_pickle = "Pickle_table_" + kf['p_name'].iloc[0] + "_without_unc"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle/{}'.format(table_pickle))
+        table_pickle = "Pickle_table_" + str(kf1) + "_without_unc"
+        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Pat_Model_Comp/{}'.format(table_pickle))
         
         # Save final data as an image 
         farm_data = [('AEP(GWh)',round(float(data.iloc[0]['AEP_No_Wake']),3), round(float(data.iloc[0]['AEP_Baseline']),3), round(float(data.iloc[0]['AEP_Opt']),3)), 
@@ -525,8 +528,8 @@ if __name__ == '__main__':
         # Render Table using above function 
         fig, ax = render_mpl_table(table_new)
         
-        table_image = "Table_Image_" + kf['p_name'].iloc[0]+ "_without_unc"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_image/{}.png'.format(table_image))
+        table_image = "Table_Image_" + str(kf1)+ "_without_unc"
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Pat_Model_Comp/{}.png'.format(table_image))
     
     else: 
         raise SystemExit("None Valid Optimization Method Chosen")
