@@ -27,6 +27,26 @@ from math import sqrt, floor
 
 if __name__ == '__main__':
 
+    #Rated power of the turbine
+    turb_cap = [15]
+    # Number of turbines that can fit in 1000MW farm
+    n_wt = [math.ceil(1000/turb_cap[0])]
+    # D of turbine 
+    d_lst = [240]
+    # Spacing we want to itterate through (5,1nm,10)
+    grid_spc = [5,(1852/d_lst[0]),10] #Will itterate through this 
+    
+    min_yaw = -25.0
+    max_yaw = 25.0
+    # Define minimum and maximum wind speed for optimizing power. 
+    # Below minimum wind speed, assumes power is zero.
+    # Above maximum_ws, assume optimal yaw offsets are 0 degrees
+    minimum_ws = 3.0
+    maximum_ws = 15.0
+    data = pd.DataFrame([])
+    data1 = pd.DataFrame([])
+    group = "Pat_duff_comp"
+    
     # Instantiate the FLORIS object
     file_dir = os.path.dirname(os.path.abspath(__file__))
     fi = wfct.floris_interface.FlorisInterface(
@@ -170,38 +190,38 @@ if __name__ == '__main__':
         return fig, ax
       
     #Rated power of the turbine
-    turb_cap = [15]
+    #turb_cap = [15]
     
     # Number of turbines that can fit in 1000MW farm
-    n_wt = [math.ceil(1000/turb_cap[0])]
+    #n_wt = [math.ceil(1000/turb_cap[0])]
     
     # D of turbine 
-    d_lst = [240]
+    #d_lst = [240]
     
     # Spacing we want to itterate through (5,1nm,10)
-    grid_spc = [5,(1852/d_lst[0]),10] #Will itterate through this 
+    #grid_spc = [5,(1852/d_lst[0]),10] #Will itterate through this 
     
     # Define wind farm coordinates and layout
     wf_coordinate = [40.99776, -124.671]
     # set min and max yaw offsets for optimization
-    min_yaw = -25.0
-    max_yaw = 25.0
+    #min_yaw = -25.0
+    #max_yaw = 25.0
     # Define minimum and maximum wind speed for optimizing power. 
     # Below minimum wind speed, assumes power is zero.
     # Above maximum_ws, assume optimal yaw offsets are 0 degrees
-    minimum_ws = 3.0
-    maximum_ws = 15.0
-    data = pd.DataFrame([])
-    data1 = pd.DataFrame([])
-    group = "Pat_duff_comp"
+    #minimum_ws = 3.0
+    #maximum_ws = 15.0
+    #data = pd.DataFrame([])
+    #data1 = pd.DataFrame([])
+    #group = "Pat_duff_comp"
     #zf = ("Patrick_Duffy_no_ti")
     for i in grid_spc:
         for ii in range(len(n_wt)):
             N = n_wt[ii]
             D = d_lst[ii]
             x, y = make_grid_layout(n_wt=N, D=D, grid_spc=i)
-            xmax = max(x)
-            ymax = max(y)
+            #xmax = max(x)
+            #ymax = max(y)
             #plt.plot(x,y,'bo')
             #plt.show()
           
