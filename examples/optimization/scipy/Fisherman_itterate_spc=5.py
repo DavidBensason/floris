@@ -85,8 +85,8 @@ if __name__ == '__main__':
     #fi.floris.farm.flow_field.wake.deflection_model.ka = 0.3
     data = pd.DataFrame([])
     data1 = pd.DataFrame([])
-    group= "spc=5" ##Change for with next run 
-    D = [120,140,160,180,200,220] #input list of testsing diameters 
+    group= "spc=5_g2" ##Change for with next run 
+    D = [160,180,200,220] #input list of testsing diameters 
     y_n = 5
     for i in D: 
         
