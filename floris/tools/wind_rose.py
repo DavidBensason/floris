@@ -427,13 +427,24 @@ class WindRose():
 
         df = pd.DataFrame()
 
+<<<<<<< HEAD
+=======
+        # convert inputs to np.array
+        wd_raw = np.array(wd_raw)
+        ws_raw = np.array(ws_raw)
+
+>>>>>>> origin/develop
         # Start by simply round and wrapping the wind direction and wind speed columns
         df['wd'] = geo.wrap_360(wd_raw.round())
         df['ws'] = ws_raw.round()
 
         # Loop through *args and assign new dataframe columns after cutting into possibly irregularly-spaced bins
         for in_var in range(0,len(args),3):
+<<<<<<< HEAD
             df[args[in_var]] = args[in_var+1]
+=======
+            df[args[in_var]] = np.array(args[in_var+1])
+>>>>>>> origin/develop
             
             # Cut into bins, make first and last bins extend to -/+ infinity
             var_edges = np.append(0.5*(args[in_var+2][1:]+args[in_var+2][:-1]),np.inf)
@@ -461,8 +472,12 @@ class WindRose():
                                       freq_val,
                                       *args,
                                       wd=np.arange(0, 360, 5.),
+<<<<<<< HEAD
                                       ws=np.arange(0, 26, 1.),
                                       **kwargs):
+=======
+                                      ws=np.arange(0, 26, 1.)):
+>>>>>>> origin/develop
    
         """
         Given user-specified arrays of wind direction, wind speed, additional optional 
@@ -479,18 +494,29 @@ class WindRose():
             freq_val (array-like): An array-like list of normalized frequencies corresponding 
                 to the provided wind variable values
             *args: Variable length argument list consisting of alternating 
+<<<<<<< HEAD
                 string arguments and array-like arguments. The strings 
                 indicate the names of additional variables to include in the 
                 wind rose where the array-like arguments contain values of the 
                 variables corresponding to the provided frequencies. 
+=======
+                string arguments, array-like arguments, and np.array objects. 
+                The strings indicate the names of additional variables to include 
+                in the wind rose where the array-like arguments contain values of 
+                the variables corresponding to the provided frequencies. The np.array 
+                objects specify the bin limits for the variable.
+>>>>>>> origin/develop
             wd (np.array, optional): Wind direction bin limits.
                 Defaults to np.arange(0, 360, 5.).
             ws (np.array, optional): Wind speed bin limits.
                 Defaults to np.arange(0, 26, 1.).
+<<<<<<< HEAD
             *kwargs: Variable length argument list consisting of alternating 
                 keyword variables and np.array objects, where each keyword matches 
                 an additional column name defined in *args and the np.array objects 
                 specify the bin limits for the variable. 
+=======
+>>>>>>> origin/develop
 
         Returns:
             df (pd.DataFrame): DataFrame with wind speed and direction
@@ -500,17 +526,33 @@ class WindRose():
 
         df = pd.DataFrame()
 
+<<<<<<< HEAD
+=======
+        # convert inputs to np.array
+        wd_raw = np.array(wd_raw)
+        ws_raw = np.array(ws_raw)
+
+>>>>>>> origin/develop
         # Start by simply wrapping the wind direction column
         df['wd'] = geo.wrap_360(wd_raw)
         df['ws'] = ws_raw
 
 
         # Loop through *args and assign new dataframe columns 
+<<<<<<< HEAD
         for in_var in range(0,len(args),2):
             df[args[in_var]] = args[in_var+1]
             
         # Assign frequency column
         df['freq_val'] = freq_val
+=======
+        for in_var in range(0,len(args),3):
+            df[args[in_var]] = np.array(args[in_var+1])
+            
+        # Assign frequency column
+        df['freq_val'] = np.array(freq_val)
+        df['freq_val'] = df['freq_val']/df['freq_val'].sum()
+>>>>>>> origin/develop
 
         # Save the df at this point
         self.df = df
@@ -518,8 +560,15 @@ class WindRose():
         # Resample onto the provided wind variable binnings
         self.internal_resample_wind_speed(ws=ws)
         self.internal_resample_wind_direction(wd=wd)
+<<<<<<< HEAD
         for col, bins in kwargs.items():
             self.internal_resample_column(col,bins)
+=======
+
+        # Loop through *args and resample using provided binnings
+        for in_var in range(0,len(args),3):
+            self.internal_resample_column(args[in_var],args[in_var+2])
+>>>>>>> origin/develop
 
         return self.df
 

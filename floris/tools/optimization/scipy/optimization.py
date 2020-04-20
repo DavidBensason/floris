@@ -1,19 +1,18 @@
-# Copyright 2019 NREL
+# Copyright 2020 NREL
 
-# Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-# this file except in compliance with the License. You may obtain a copy of the
-# License at http://www.apache.org/licenses/LICENSE-2.0
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at http://www.apache.org/licenses/LICENSE-2.0
 
-# Unless required by applicable law or agreed to in writing, software distributed
-# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-# CONDITIONS OF ANY KIND, either express or implied. See the License for the
-# specific language governing permissions and limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
 
 import numpy as np
-import pandas as pd
-from scipy.optimize import minimize
-from scipy.stats import norm
 import matplotlib.pyplot as plt
+<<<<<<< HEAD
 from abc import ABCMeta, abstractmethod
 from itertools import repeat
 from itertools import combinations 
@@ -22,13 +21,13 @@ import copy
 from floris.simulation import TurbineMap
 from floris.simulation.farm import Farm
 import pdb
+=======
+
+>>>>>>> origin/develop
 try:
     from mpi4py.futures import MPIPoolExecutor
 except ImportError:
     pass
-
-# import warnings
-# warnings.simplefilter('ignore', RuntimeWarning)
 
 
 class Optimization():
@@ -73,6 +72,7 @@ class Optimization():
         """
         self._nturbs = len(self.fi.floris.farm.turbine_map.turbines)
         return self._nturbs
+<<<<<<< HEAD
 
     @property
     def nturbs_sub(self):
@@ -3371,4 +3371,6 @@ class BaseCOE():
         # Comptue Cost of Energy (COE) as $/kWh for a plant
         return (self.FCR()*(self.TCC(height) + self.BOS() + self.FC()) \
                 + self.O_M()) / (AEP_sum/1000/self.opt_obj.plant_kw)
+=======
+>>>>>>> origin/develop
         
