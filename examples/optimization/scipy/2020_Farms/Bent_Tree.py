@@ -40,7 +40,7 @@ if __name__ == '__main__':
     # Instantiate the FLORIS object
     file_dir = os.path.dirname(os.path.abspath(__file__))
     fi = wfct.floris_interface.FlorisInterface(
-        os.path.join(file_dir, '../../example_input.json')
+        os.path.join(file_dir, '../../../example_input.json')
     )
     
     # Function for plotting final tabular data as an image 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
             else:
                 cell.set_facecolor(row_colors[k[0]%len(row_colors) ])
         return fig, ax
-            
+              
     # Instantiate the FLORIS object
     #file_dir = os.path.dirname(os.path.abspath(__file__))
     #fi = wfct.floris_interface.FlorisInterface(
