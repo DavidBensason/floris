@@ -562,7 +562,7 @@ class FlowField():
         x0 = np.mean([np.min(self.x), np.max(self.x)])
         y0 = np.mean([np.min(self.y), np.max(self.y)])
         center_of_rotation = Vec3(x0, y0, 0)
-
+        
         # Rotate the turbines such that they are now in the frame of reference
         # of the wind direction simplifying computing the wakes and wake overlap
         rotated_map = self.turbine_map.rotated(

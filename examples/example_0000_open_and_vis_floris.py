@@ -14,9 +14,22 @@
 
 import matplotlib.pyplot as plt
 import floris.tools as wfct
-
+from floris.simulation.farm import Farm
+import copy
 # Initialize the FLORIS interface fi
 fi = wfct.floris_interface.FlorisInterface("example_input.json")
+farm_instance_dict = fi.floris.farm.instance_dictionary
+
+upper = copy.deepcopy(farm_instance_dict)[0]
+upper['properties']['layout_x'] = [0, 750]
+upper['properties']['layout_y'] = [600,600]
+lower = copy.deepcopy(farm_instance_dict)[0]
+lower['properties']['layout_x'] = [0, 750]
+lower['properties']['layout_y'] = [0, 0]
+farm_up = Farm(upper, fi.floris.farm.flow_field.turbine_map.turbines[0], fi.floris.farm.flow_field.wake)
+farm_low = Farm(lower, fi.floris.farm.flow_field.turbine_map.turbines[0], fi.floris.farm.flow_field.wake)
+farm_up.flow_field.calculate_wake()
+farm_low.flow_field.calculate_wake()
 
 # Calculate wake
 fi.calculate_wake()

@@ -66,7 +66,8 @@ class Farm():
         Farm: An instantiated Farm object.
     """
 
-    def __init__(self, instance_dictionary, turbine, wake):
+    def __init__(self,instance_dictionary, turbine, wake):
+        self.instance_dictionary = instance_dictionary,
         self.description = instance_dictionary["description"]
         properties = instance_dictionary["properties"]
         layout_x = properties["layout_x"]
