@@ -163,7 +163,10 @@ if __name__ == '__main__':
             ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
             turbine.power_thrust_table["power"] = cp_new
             turbine.power_thrust_table["thrust"] = ct_new
-    
+    for count, coord in enumerate(fi.floris.farm.flow_field.turbine_map.coords):
+        coord.x3 = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    fi.floris.farm.flow_field.specified_wind_height = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+
     unc_options={'std_wd': 4.95, 'std_yaw': 0.0,'pmf_res': 1.0, 'pdf_cutoff': 0.95}
     # ================================================================================
     print('Plotting the FLORIS flowfield...')
