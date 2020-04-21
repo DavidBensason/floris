@@ -46,7 +46,7 @@ if __name__ == '__main__':
     fi = wfct.floris_interface.FlorisInterface(
         os.path.join(file_dir, '../../../example_input.json')
     )
-    
+       
     # Function for plotting final tabular data as an image 
     def render_mpl_table(table_new, col_width=2.8, row_height=0.625, font_size=14,
                          header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
@@ -127,7 +127,10 @@ if __name__ == '__main__':
             ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
             turbine.power_thrust_table["power"] = cp_new
             turbine.power_thrust_table["thrust"] = ct_new
-    
+    for count, coord in enumerate(fi.floris.farm.flow_field.turbine_map.coords):
+        coord.x3 = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    fi.floris.farm.flow_field.specified_wind_height = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+
     # set min and max yaw offsets for optimization 
     min_yaw = -25.0
     max_yaw = 25.0

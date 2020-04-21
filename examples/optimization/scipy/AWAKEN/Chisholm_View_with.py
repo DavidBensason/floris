@@ -129,7 +129,10 @@ if __name__ == '__main__':
             ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
             turbine.power_thrust_table["power"] = cp_new
             turbine.power_thrust_table["thrust"] = ct_new
-    
+    for count, coord in enumerate(fi.floris.farm.flow_field.turbine_map.coords):
+        coord.x3 = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    fi.floris.farm.flow_field.specified_wind_height = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+
     # set min and max yaw offsets for optimization 
     min_yaw = -25.0
     max_yaw = 25.0
