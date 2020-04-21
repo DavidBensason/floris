@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import floris.tools as wfct
 import floris.tools.visualization as vis
 import floris.tools.cut_plane as cp
-from floris.tools.optimization.scipy.optimization import YawOptimizationWindRoseParallel
+from floris.tools.optimization.scipy.yaw_wind_rose_parallel import YawOptimizationWindRoseParallel
 import floris.tools.wind_rose as rose
 import floris.tools.power_rose as pr
 import numpy as np
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     # Instantiate the FLORIS object
     file_dir = os.path.dirname(os.path.abspath(__file__))
     fi = wfct.floris_interface.FlorisInterface(
-        os.path.join(file_dir, '../../example_input.json')
+        os.path.join(file_dir, '../../../example_input.json')
     )
     
     # Function for plotting final tabular data as an image 
@@ -131,7 +131,10 @@ if __name__ == '__main__':
             ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
             turbine.power_thrust_table["power"] = cp_new
             turbine.power_thrust_table["thrust"] = ct_new
-    
+    for count, coord in enumerate(fi.floris.farm.flow_field.turbine_map.coords):
+        coord.x3 = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    fi.floris.farm.flow_field.specified_wind_height = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+
     # set min and max yaw offsets for optimization 
     min_yaw = -25.0
     max_yaw = 25.0

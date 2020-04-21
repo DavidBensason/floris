@@ -1,13 +1,16 @@
-# Copyright 2019 NREL
+# Copyright 2020 NREL
 
-# Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-# this file except in compliance with the License. You may obtain a copy of the
-# License at http://www.apache.org/licenses/LICENSE-2.0
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at http://www.apache.org/licenses/LICENSE-2.0
 
-# Unless required by applicable law or agreed to in writing, software distributed
-# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-# CONDITIONS OF ANY KIND, either express or implied. See the License for the
-# specific language governing permissions and limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+# See read the https://floris.readthedocs.io for documentation
 
 from ..utilities import Vec3
 from ..utilities import wrap_180
@@ -23,14 +26,19 @@ class TurbineMap():
     :py:class:`floris.utilities.Vec3` object. This class also provides 
     some helper methods for sorting and manipulating the turbine layout.
 
-    TODO: this docstring is incorrect!
-
     Args:
-        turbine_map_dict: A dictionary mapping of 
-            :py:class:`floris.simulation.turbine.Turbine` to 
-            :py:class:`floris.utilities.Vec3`; it should have the 
-            following form:
+        layout_x: A list of floats listing the x-coordinate locations of the
+            Turbine objects in the Farm.
 
+        layout_y: A list of floats listing the y-coordinate locations of the
+            Turbine objects in the Farm.
+
+        turbines: A list of Turbine objects corresponding to the locations
+            given in layout_x and layout_y.
+        
+        The underlying data structure for this class is a Python dictionary
+        mapping of :py:class:`floris.simulation.turbine.Turbine` to 
+        :py:class:`floris.utilities.Vec3` in the following form:
             {
 
                 Vec3(): Turbine(),
@@ -68,28 +76,28 @@ class TurbineMap():
         """
         self._turbine_map_dict = self._build_internal_dict(self.coords, self.turbines)
 
-    def rotated(self, angle, center_of_rotation):
+    def rotated(self, angles, center_of_rotation):
         """
-        Rotate the Turbines in TurbineMap by a specific angle.
-
-        Rotate the turbine coordinates by a given angle about a given 
-        center of rotation. This function returns a new TurbineMap 
-        object whose turbines are rotated. The original TurbineMap is 
-        not modified.
+        Rotate each turbine coordinate in the turbine list by a given
+        angle about a center of rotation. This function returns
+        a new TurbineMap object whose turbines are rotated from the original.
+        The original TurbineMap is not modified.
 
         Args:
-            angle: A list of the wind direction angles at each turbine,
-            in degrees, of which to rotate the turbines.
-            center_of_rotation: The center of rotation. If not supplied 
-                the default is the center of the flow field.
+            [angles]: A list of angles (degrees) to rotate each turbine.
+            center_of_rotation: The center of rotation as a Vec3.
 
         Returns:
             TurbineMap: A rotated TurbineMap.
+
+        - rotates all turbines so that the wind direction at the turbine is aligned
+        with 0 degrees.
+
         """
         layout_x = np.zeros(len(self.coords))
         layout_y = np.zeros(len(self.coords))
         for i, coord in enumerate(self.coords):
-            coord.rotate_on_x3(angle[i], center_of_rotation)
+            coord.rotate_on_x3(angles[i], center_of_rotation)
             layout_x[i] = coord.x1prime
             layout_y[i] = coord.x2prime
         return TurbineMap(layout_x, layout_y, self.turbines)

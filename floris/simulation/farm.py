@@ -22,22 +22,18 @@ import numpy as np
 class Farm():
     """
     Farm is a class containing the objects that make up a FLORIS model.
-
     Farm is the container class of the FLORIS package. It brings 
     together all of the component objects after input (i.e., Turbine, 
     Wake, FlowField) and packages everything into the appropriate data 
     type. Farm should also be used as an entry point to probe objects 
     for generating output.
-
     Args:
         instance_dictionary: A dictionary as generated from the 
             input_reader; it should have the following key-value pairs:
-
             -   **description**: A string containing a description of 
                 the wind farm.
             -   **properties**: A dictionary containing the following 
                 key-value pairs:
-
                 -   **wind_speed**: A list that contains the wind speed 
                     measurements at hub height (m/s).
                 -   **wind_x**: a list that contains the x coordinates
@@ -58,16 +54,14 @@ class Farm():
                     x coordinates of the turbines.
                 -   **layout_y**: A list that contains the 
                     y coordinates of the turbines.
-
         turbine: The Turbine object used in Farm.
         wake: The Wake object used in Farm.
-
     Returns:
         Farm: An instantiated Farm object.
     """
 
     def __init__(self, instance_dictionary, turbine, wake):
-        self.description = instance_dictionary["description"]
+        self.name = instance_dictionary["name"]
         properties = instance_dictionary["properties"]
         layout_x = properties["layout_x"]
         layout_y = properties["layout_y"]
@@ -94,7 +88,7 @@ class Farm():
 
     def __str__(self):
         return \
-            "Description: {}\n".format(self.description) + \
+            "Name: {}\n".format(self.name) + \
             "Wake Model: {}\n".format(self.flow_field.wake.velocity_model) + \
             "Deflection Model: {}\n".format(
                 self.flow_field.wake.deflection_model)
@@ -102,20 +96,16 @@ class Farm():
     def set_wake_model(self, wake_model):
         """
         This method sets the wake model used.
-
         Args:
             wake_model: A string containing the wake model used to 
                 calculate the wake; Valid wake model options are: 
                 "curl", "gauss", "ishihara", "jensen",
                 and "multizone".
-
         Returns:
             *None* -- The wake model and flow field are updated in 
             the :py:obj:`floris.simulation.flow_field` object.
-
         Examples:
             To set the wake model:
-
             >>> floris.farm.set_wake_model('curl')
         """
 
@@ -147,25 +137,19 @@ class Farm():
         This method sets yaw angles for all turbines and optionally 
         calculates the new wake velocities and updates them in the 
         flow field.
-
         Args:
             yaw_angles: A single float that sets a constant yaw angle 
                 for all turbines or a list of floats that are unique 
                 yaw angles for each turbine in degrees.
-
         Returns:
             *None* -- The turbines are updated directly and the flow 
             field is updated in the 
             :py:obj:`floris.simulation.flow_field` object.
-
         Examples:
             To set all the yaw angles to one value:
-
             >>> floris.farm.set_yaw_angles(20.0)
-
             To set unique yaw angles for the turbines (for example, 
             a 3 turbine array):
-
             >>> floris.farm.set_yaw_angles([20.0, 10.0, 0.0])
         """
         if isinstance(yaw_angles, float) or isinstance(yaw_angles, int):
@@ -180,13 +164,10 @@ class Farm():
     def wind_speed(self):
         """
         This property returns the wind speed for the wind farm.
-
         Returns:
             list: The current wind speed at each turbine  in m/s.
-
         Examples:
             To get the wind speed for the wind farm:
-
             >>> wind_speed = floris.farm.wind_speed
         """
         return self.wind_map.turbine_wind_speed
@@ -195,14 +176,11 @@ class Farm():
     def wind_direction(self):
         """
         This property returns the wind direction for the wind farm.
-
         Returns:
             list: The current wind direction at each turbine in 
             degrees.
-
         Examples:
             To get the wind direction for the wind farm:
-
             >>> wind_direction = floris.farm.wind_direction
         """
         return list(
@@ -213,14 +191,11 @@ class Farm():
         """
         This property returns the wind shear power law exponent for 
         the wind farm.
-
         Returns:
             float: The current wind shear power law exponent in the 
             wind farm.
-
         Examples:
             To get the wind shear for the wind farm:
-
             >>> wind_shear = floris.farm.wind_shear
         """
         return self.flow_field.wind_shear
@@ -230,14 +205,11 @@ class Farm():
         """
         This property returns the wind veer -- the vertical change in 
         wind direction across the rotor.
-
         Returns:
             float: The current vertical change in wind direction 
             across the rotor in degrees.
-
         Examples:
             To get the wind veer for the wind farm:
-
             >>> wind_veer = floris.farm.wind_veer
         """
         return self.flow_field.wind_veer
@@ -247,14 +219,11 @@ class Farm():
         """
         This property returns the turbulence intensity for the 
         wind farm.
-
         Returns:
             list: The initial turbulence intensity at each turbine 
             expressed as a decimal fraction.
-
         Examples:
             To get the turbulence intensity for the wind farm:
-
             >>> TI = floris.farm.turbulence_intensity
         """
         return self.wind_map.turbine_turbulence_intensity
@@ -263,13 +232,10 @@ class Farm():
     def air_density(self):
         """
         This property returns the air density for the wind farm.
-
         Returns:
             float: The current air density in kg/m^3.
-
         Examples:
             To get the air density for the wind farm:
-
             >>> air_density = floris.farm.air_density
         """
         return self.flow_field.air_density
@@ -280,14 +246,11 @@ class Farm():
         This property returns the values of the 
         :py:obj:`floris.simulation.wind_map` object associated with 
         the wind farm.
-
         Returns:
             WindMap: A :py:obj:`floris.simulation.wind_map` 
             object that holds atmospheric input.
-
         Examples:
             To get the wind map for the wind farm:
-
             >>> wind_map = floris.farm.wind_map
         """
 
@@ -303,14 +266,11 @@ class Farm():
         This property returns the turbine map of the 
         :py:obj:`floris.simulation.flow_field` object associated with 
         the wind farm.
-
         Returns:
             TurbineMap: A :py:obj:`floris.simulation.turbine_map` 
             object that holds turbine information for the farm.
-
         Examples:
             To get the turbine map for the wind farm:
-
             >>> turbine_map = floris.farm.turbine_map
         """
         return self.flow_field.turbine_map
@@ -321,14 +281,11 @@ class Farm():
         This property returns the list of 
         :py:obj:`floris.simulation.turbine` objects contained in the 
         :py:obj:`floris.simulation.turbine_map` object.
-
         Returns:
             [Turbine]: A list of :py:obj:`floris.simulation.turbine` 
             objects that hold the turbine information for the wind farm.
-
         Examples:
             To get a list of turbine objects from the wind farm:
-
             >>> turbines = floris.farm.turbines
         """
         return self.turbine_map.turbines
@@ -340,13 +297,10 @@ class Farm():
         contained in the :py:obj:`floris.simulation.flow_field` object. It
         is intended to reduce the depth of the object-hierachy required to
         modify the wake models from a script.
-
         Returns:
             Wake: A :py:obj:`floris.simulation.wake` object.
-
         Examples:
             To access and modify the wake model:
-
             >>> floris.farm.wake.model = "another_model
         """
         return self.flow_field.wake
