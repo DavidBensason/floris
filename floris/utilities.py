@@ -1,16 +1,17 @@
 # Copyright 2020 NREL
-
+ 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
 # the License at http://www.apache.org/licenses/LICENSE-2.0
-
+ 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-
-# See read the https://floris.readthedocs.io for documentation
+ 
+# See https://floris.readthedocs.io for documentation
+ 
 
 import numpy as np
 import coloredlogs
@@ -22,13 +23,11 @@ class Vec3():
     def __init__(self, x1, x2=None, x3=None, string_format=None):
         """
         Object containing vector information for coordinates.
-
         # TODO: possibility to store components as np.array or Python list
         # and use x1, x2, x3 virtual properties. This would simplify the
         # arithmetic overloading by allowing the use of numpy array
         # operations. It may add some performance gain, too, but that is
         # likely negligible.
-
         Args:
             x1: [numeric, numeric, numeric] or numeric -- The first argument
                 can be a list of the three vector components or simply the
@@ -68,7 +67,6 @@ class Vec3():
         Rotate about the x3 coordinate axis by a given angle
         and center of rotation.
         The angle theta should be given in degrees.
-
         Sets the rotated components on this object and returns
         """
         if center_of_rotation is None:
@@ -122,7 +120,6 @@ class Vec3():
 def cosd(angle):
     """
     cosine of an angle with the angle given in degrees
-
     Returns:
         [float]: cosine of angle in degrees
     """
@@ -132,7 +129,6 @@ def cosd(angle):
 def sind(angle):
     """
     sine of an angle with the angle given in degrees
-
     Returns:
         [float]: sine of angle in degrees
     """
@@ -142,41 +138,36 @@ def sind(angle):
 def tand(angle):
     """
     tangent of an angle with the angle given in degrees
-
     Returns:
         [float]: tangent of angle in degrees
     """
     return np.tan(np.radians(angle))
 
 
-def wrap_180(angle):
+def wrap_180(x):
     """
     If the given angle is less than -180 or greater than or equal to
     180 degrees, correct it to lie within the range (-180, 180].
-
+    x can be a scalar or numpy array
     Returns:
         The corrected angle
     """
-    if angle <= -180.0:
-        return angle + 360.0
-    if angle > 180.0:
-        return angle - 360.0
-    return angle
+    x = np.where(x <= -180., x + 360., x)
+    x = np.where(x > 180., x - 360., x)
+    return (x)
 
 
-def wrap_360(angle):
+def wrap_360(x):
     """
     If the given angle is less than 0 or greater than or equal to
     360 degrees, correct it to lie within the range (0, 360].
-
+    x can be a scalar or numpy array
     Returns:
         The corrected angle
     """
-    if angle <= 0.0:
-        return angle + 360.0
-    if angle > 360.0:
-        return angle - 360.0
-    return angle
+    x = np.where(x < 0., x + 360., x)
+    x = np.where(x >= 360., x - 360., x)
+    return (x)
 
 
 class LogClass:
