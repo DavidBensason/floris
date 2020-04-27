@@ -488,8 +488,15 @@ if __name__ == '__main__':
         
         # Summarize using the power rose module
         case_name = 'Example '+kf['p_name'].iloc[0]+ ' Wind Farm without UNC'
-        power_rose = pr.PowerRose(case_name, df_power, df_turbine_power_no_wake, df_turbine_power_baseline,df_yaw, df_turbine_power_opt)
-        
+        #power_rose = pr.PowerRose(case_name, df_power, df_turbine_power_no_wake, df_turbine_power_baseline,df_yaw, df_turbine_power_opt)
+        power_rose = pr.PowerRose()
+        power_rose.make_power_rose_from_user_data(
+        	case_name,
+        	df,
+        	df_base['power_no_wake'],
+        	df_base['power_baseline'],
+        	df_opt['power_opt']
+        )
         
         fig, axarr = plt.subplots(3, 1, sharex=True, figsize=(6.4, 6.5))
         power_rose.plot_by_direction(axarr)
