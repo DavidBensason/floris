@@ -496,7 +496,7 @@ if __name__ == '__main__':
         
         # Summarize using the power rose module
         case_name = 'Example '+str(kf['p_name'].iloc[0])+ ' Wind Farm without UNC'
-        power_rose = pr.PowerRose(case_name, df_power, df_turbine_power_no_wake, df_turbine_power_baseline,df_yaw, df_turbine_power_opt)
+        #power_rose = pr.PowerRose(case_name, df_power, df_turbine_power_no_wake, df_turbine_power_baseline,df_yaw, df_turbine_power_opt)
         power_rose = pr.PowerRose()
         power_rose.make_power_rose_from_user_data(
         	case_name,
