@@ -297,9 +297,6 @@ if __name__ == '__main__':
     table_image = "Table_Image_" + str(kf)+ "_without_unc"
     #plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Fisherman_Study/table_image/{}.png'.format(table_image))
 
-
-else: 
-    raise SystemExit("None Valid Optimization Method Chosen")
     
     
 
