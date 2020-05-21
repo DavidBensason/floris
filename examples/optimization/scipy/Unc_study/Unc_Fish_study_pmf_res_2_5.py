@@ -81,7 +81,7 @@ if __name__ == '__main__':
     data1 = pd.DataFrame([]) 
     
     # Set wind farm to N_row x t_row grid with constant spacing 
-    pmf_res = 1.0 
+    pmf_res = 2.5 
     kf= "Fishermans"
     kf1 = "Fisherman_unc_pmf=" + str(pmf_res)
     
@@ -426,3 +426,4 @@ if __name__ == '__main__':
     else: 
         raise SystemExit("None Valid Optimization Method Chosen")
     
+

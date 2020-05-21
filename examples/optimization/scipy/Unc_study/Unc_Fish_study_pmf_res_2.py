@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -155,8 +157,8 @@ if __name__ == '__main__':
     wfct.visualization.visualize_cut_plane(hor_plane, ax=ax)
     ax.set_title('Baseline flow for U = 8 m/s, Wind Direction = 270$^\circ$')
     
-    layout_name = str(kf1) + "_layout.png"
-    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Unc_study/Saved_Fig/{}'.format(layout_name))
+    #layout_name = str(kf1) + "_layout.png"
+    #plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Unc_Study//{}'.format(layout_name))
     # ================================================================================
     print('Importing wind rose data...')
     # ================================================================================
@@ -332,7 +334,7 @@ if __name__ == '__main__':
         df_turbine_power_opt['ws'] = df.ws
         df_turbine_power_opt['wd'] = df.wd
         # Summarize using the power rose module
-        case_name = 'Example '+kf['p_name'].iloc[0]+ ' Wind Farm with UNC'
+        case_name = 'Example '+str(kf)+ ' Wind Farm with UNC'
         #power_rose = pr.PowerRose(case_name, df_power, df_turbine_power_no_wake, df_turbine_power_baseline,df_yaw, df_turbine_power_opt)
         power_rose = pr.PowerRose()
         power_rose.make_power_rose_from_user_data(
@@ -342,14 +344,13 @@ if __name__ == '__main__':
         	df_base_unc['power_baseline'],
         	df_opt_unc['power_opt']
         )
-        
         fig, axarr = plt.subplots(3, 1, sharex=True, figsize=(6.4, 6.5))
         power_rose.plot_by_direction(axarr)
         power_rose.report()
         
         # Save farm report with designated name and path (this case  HPC)
         report_farm_without_unc = str(kf1) + "_report_with_unc.png"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Unc_study/Saved_Fig/{}'.format(report_farm_without_unc))
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Unc_Study/farm_report/{}'.format(report_farm_without_unc))
         plt.show()
         plt.show()
         
@@ -361,7 +362,7 @@ if __name__ == '__main__':
                                              index=[0]), ignore_index=True)
         
         table_pickle = "Pickle_table_" + str(kf1) + "_with_unc"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Unc_study/Saved_Fig/{}'.format(table_pickle))
+        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Unc_Study/tabular_data_pickle/{}'.format(table_pickle))
         
         
         farm_data = [('AEP(GWh)',round(float(data.iloc[0]['AEP_No_Wake']),3), round(float(data.iloc[0]['AEP_Baseline']),3), round(float(data.iloc[0]['AEP_Opt']),3)), 
@@ -376,7 +377,7 @@ if __name__ == '__main__':
         fig, ax = render_mpl_table(table_new)
         
         table_image = "Table_Image_" + str(kf1)+ "_with_unc"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Unc_study/Saved_Fig/{}.png'.format(table_image))
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Unc_Study/tabular_data_image/{}'.format(table_image))
     
     
     elif Optimization_case == "Just_Base":
