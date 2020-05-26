@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar 30 13:51:55 2020
+Created on Wed Apr 15 14:38:26 2020
 
 @author: dbensaso
 """
+
 
 import matplotlib.pyplot as plt
 import floris.tools as wfct
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     data = pd.DataFrame([])
     data1 = pd.DataFrame([])
     group= "spc=5_g2" ##Change for with next run 
-    D = 120 #input list of testsing diameters 
+    D = 100 #input list of testsing diameters 
     y_n = 11
     #for i in D: 
         

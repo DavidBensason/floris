@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar 30 13:51:55 2020
+Created on Wed Apr 15 14:32:57 2020
 
 @author: dbensaso
 """
@@ -86,8 +86,8 @@ if __name__ == '__main__':
     data = pd.DataFrame([])
     data1 = pd.DataFrame([])
     group= "spc=5_g2" ##Change for with next run 
-    D = 120 #input list of testsing diameters 
-    y_n = 11
+    D = 100 #input list of testsing diameters 
+    y_n = 7
     #for i in D: 
         
     # Set wind farm to N_row x t_row grid with constant spacing 
@@ -550,5 +550,6 @@ if __name__ == '__main__':
         raise SystemExit("None Valid Optimization Method Chosen")
     
     
-    
+
+# -*- coding: utf-8 -*-
 
