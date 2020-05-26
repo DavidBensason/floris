@@ -15,6 +15,7 @@ import floris.tools.cut_plane as cp
 from floris.tools.optimization.scipy.yaw_wind_rose_parallel import YawOptimizationWindRoseParallel
 import floris.tools.wind_rose as rose
 import floris.tools.power_rose as pr
+import WakeSteering_US.cp_for_any_turb as cturb
 import numpy as np
 import pandas as pd
 import os
@@ -83,7 +84,7 @@ if __name__ == '__main__':
     # Set wind farm to N_row x t_row grid with constant spacing 
     pmf_res = 1.5 
     kf= "Fishermans"
-    kf1 = "Fisherman_unc_pmf=" + str(pmf_res)
+    kf1 = "Fisherman_no_unc"
     
     D = 164
     spc= (1852/D)
@@ -111,18 +112,23 @@ if __name__ == '__main__':
     
     N_turb = len(layout_x)
     
+    #D = kf["t_rd"]
+    P_r = 8000
+    #hub_h = kf["t_hh"]
     
+    C_p_rated = 0.472991558
+    C_t_rated = 0.707315
     
     fi.reinitialize_flow_field(layout_array=(layout_x, layout_y),wind_direction=[270.0],wind_speed=[8.0])
     fi.calculate_wake()
     
-    cp_8MW= [0,0,0,0,0.13,0.3,0.37,0.39,0.41,0.42,0.43,0.43,0.44,0.44,0.44,0.44,0.44,0.43,0.42,0.39,0.35,
-             0.31,0.28,0.25,0.23,0.2,0.18,0.17,0.15,0.14,0.13,0.12,0.11,0.1,0.09,0.08,0.08,0.07,0.07,0.06,
-             0.06,0.05,0.05,0.05,0.04,0.04,0.04,0.0]
+    #cp_8MW= [0,0,0,0,0.13,0.3,0.37,0.39,0.41,0.42,0.43,0.43,0.44,0.44,0.44,0.44,0.44,0.43,0.42,0.39,0.35,
+    #         0.31,0.28,0.25,0.23,0.2,0.18,0.17,0.15,0.14,0.13,0.12,0.11,0.1,0.09,0.08,0.08,0.07,0.07,0.06,
+    #         0.06,0.05,0.05,0.05,0.04,0.04,0.04,0.0]
     
-    ct_8MW= [1.18,1.1,1.03,0.97,0.92,0.88,0.85,0.83,0.82,0.81,0.8,0.79,0.78,0.77,0.76,0.75,0.73,0.71,0.67,
-             0.6,0.52,0.45,0.39,0.34,0.3,0.27,0.24,0.22,0.19,0.18,0.16,0.15,0.14,0.13,0.12,0.11,0.1,0.09,
-             0.09,0.08,0.08,0.07,0.07,0.06,0.06,0.06,0.05,0.05]
+    #ct_8MW= [1.18,1.1,1.03,0.97,0.92,0.88,0.85,0.83,0.82,0.81,0.8,0.79,0.78,0.77,0.76,0.75,0.73,0.71,0.67,
+    #         0.6,0.52,0.45,0.39,0.34,0.3,0.27,0.24,0.22,0.19,0.18,0.16,0.15,0.14,0.13,0.12,0.11,0.1,0.09,
+    #         0.09,0.08,0.08,0.07,0.07,0.06,0.06,0.06,0.05,0.05]
     
     #fi.floris.farm.flow_field.turbine_map.turbines.power_thrust_table["power"] = cp_8MW
     #fi.floris.farm.flow_field.turbine_map.turbines.power_thrust_table["thrust"] = ct_8MW
@@ -131,13 +137,20 @@ if __name__ == '__main__':
     
     #hub_h= 109
     #Diam= 164
+    tf= pd.read_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Lookup_table_8MW')
+
     for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
             turbine.rotor_diameter = int(D)
             turbine.hub_height = 109
-            cp_new = cp_8MW
-            ct_new = ct_8MW
+            T_Area = (np.pi* (int(D)**2)) /4
+            U_turb_rated= (2* P_r*(10**3)/ (C_p_rated * 1.225* T_Area))**(1/3)
+            U_turb_norm =  tf.iloc[:,0] / U_turb_rated
+            cp_new = cturb.cp_for_any_turb(U_turb_norm,tf)
+            ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
             turbine.power_thrust_table["power"] = cp_new
             turbine.power_thrust_table["thrust"] = ct_new
+            turbine.change_turbine_parameters({})
+            
     for count, coord in enumerate(fi.floris.farm.flow_field.turbine_map.coords):
             coord.x3 = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
     fi.floris.farm.flow_field.specified_wind_height = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
@@ -414,14 +427,53 @@ if __name__ == '__main__':
         df_turbine_power_opt['wd'] = df.wd
         
         # Summarize using the power rose module
-        case_name = 'Example '+kf['p_name'].iloc[0]+ ' Wind Farm without UNC'
-        power_rose = pr.PowerRose(case_name, df_power, df_turbine_power_no_wake, df_turbine_power_baseline,df_yaw, df_turbine_power_opt)
-        
+        case_name = 'Example '+str(kf1)+ ' Wind Farm without UNC'
+        #power_rose = pr.PowerRose(case_name, df_power, df_turbine_power_no_wake, df_turbine_power_baseline,df_yaw, df_turbine_power_opt)
+        power_rose = pr.PowerRose()
+        power_rose.make_power_rose_from_user_data(
+        	case_name,
+        	df,
+        	df_base['power_no_wake'],
+        	df_base['power_baseline'],
+        	df_opt['power_opt']
+        ) 
         
         fig, axarr = plt.subplots(3, 1, sharex=True, figsize=(6.4, 6.5))
         power_rose.plot_by_direction(axarr)
         power_rose.report()
+        
+        # Save farm report with designated name and path (this case  HPC)
+        report_farm_without_unc = str(kf1) + "_report_without_unc.png"
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/100_Farms/farm_report/{}'.format(report_farm_without_unc))
         plt.show()
+        
+        #Save final data as a pickle 
+        data = data.append(pd.DataFrame({'Farm Name': str(kf['p_name'].iloc[0]), '#Turbine': len(kf), 'Farm_lat':kf["ylat"].mean(), 'Farm_lon': kf["xlong"].mean(), 'AEP_No_Wake': power_rose.total_no_wake, 
+                                         'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
+                                         '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
+                                         'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
+                                         'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
+                                         index=[0]), ignore_index=True)
+        table_pickle = "Pickle_" + str(kf1) + "_without_unc"
+        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/100_Farms/tabular_data_pickle/{}'.format(table_pickle))
+        
+        # Save final data as an image 
+        #tabular = (data.loc[data['Farm Name'] == kf['p_name'].iloc[0]])
+        # Save final data as an image 
+        farm_data = [('AEP(GWh)',round(float(data.iloc[0]['AEP_No_Wake']),3), round(float(data.iloc[0]['AEP_Baseline']),3), round(float(data.iloc[0]['AEP_Opt']),3)), 
+                ('%', '--', round(float(data.iloc[0]['%_Baseline']),3), round(float(data.iloc[0]['%_Opt']),3)), 
+                ('%Wake_Loss', '--',round(float(data.iloc[0]['Wk_Loss_Baseline']),3), round(float(data.iloc[0]['Wk_Loss_Opt']),3)),
+                ('%AEP_Gain', '--', '--', round(float(data.iloc[0]['AEP_Gain_Opt']),3)), 
+                ('Loss_Reduced', '--', '--', round(float(data.iloc[0]['Loss_Red_Opt']),3))]
+    
+        table_new= pd.DataFrame(farm_data, columns = [' ','No-Wake','Baseline','Optimized'], index= None)
+            
+        # Render Table using above function 
+        fig, ax = render_mpl_table(table_new)
+        
+        table_image = "Table_Image_" + str(kf1)+ "_without_unc"
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/100_Farms/tabular_data_image/{}.png'.format(table_image))
+    
     
     else: 
         raise SystemExit("None Valid Optimization Method Chosen")
