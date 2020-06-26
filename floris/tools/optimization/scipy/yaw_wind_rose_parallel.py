@@ -55,7 +55,6 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
         """
         Instantiate YawOptimizationWindRoseParallel object with a
         FlorisInterface object and assign parameter values.
-
         Args:
             fi (:py:class:`~.tools.floris_interface.FlorisInterface`):
                 Interface used to interact with the Floris object.
@@ -102,7 +101,6 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
                 direction and yaw position deviations when wind direction and
                 or yaw position uncertainty is included in the power
                 calculations. Contains the following key-value pairs:
-
                 -   **wd_unc** (*np.array*): The wind direction
                     deviations from the intended wind direction (deg).
                 -   **wd_unc_pmf** (*np.array*): The probability
@@ -111,7 +109,6 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
                     from the intended yaw angles (deg).
                 -   **yaw_unc_pmf** (*np.array*): The probability
                     of each yaw angle deviation in **yaw_unc** occuring.
-
                 If none are specified, default PMFs are calculated using
                 values provided in **unc_options**. Defaults to None.
             unc_options (dictionary, optional): A dictionary containing values
@@ -120,7 +117,6 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
                 position deviations when wind direction and/or yaw position
                 uncertainty is included. This argument is only used when
                 **unc_pmfs** is None and contains the following key-value pairs:
-
                 -   **std_wd** (*float*): The standard deviation of
                     the wind direction deviations from the original wind
                     direction (deg).
@@ -131,7 +127,6 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
                 -   **pdf_cutoff** (*float*): The cumulative
                     distribution function value at which the tails of the
                     PMFs are truncated.
-
                 If none are specified, default values of
                 {'std_wd': 4.95, 'std_yaw': 1.75, 'pmf_res': 1.0,
                 'pdf_cutoff': 0.995} are used. Defaults to None.
@@ -161,7 +156,6 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
         For a single (wind speed, direction, ti (optional)) combination, finds
         the baseline power produced by the wind farm and the ideal power
         without wake losses.
-
         Args:
             ws (float): The wind speed used in floris for the yaw optimization.
             wd (float): The wind direction used in floris for the yaw
@@ -169,11 +163,9 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
             ti (float, optional): An optional turbulence intensity value for
                 the yaw optimization. Defaults to None, meaning TI will not be
                 included in the AEP calculations.
-
         Returns:
             - **df_base** (*Pandas DataFrame*) - DataFrame with a single row,
                 containing the following columns:
-
                 - **ws** (*float*) - The wind speed value for the row.
                 - **wd** (*float*) - The wind direction value for the row.
                 - **ti** (*float*) - The turbulence intensity value for the
@@ -264,11 +256,10 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
 
         return df_base
 
-    def _optimize_one_case(self, ws, wd, ti=None):
+    def _optimize_one_case(self, ws, wd, initial_farm_power, ti=None):
         """
         For a single (wind speed, direction, ti (optional)) combination, finds
         the power resulting from optimal wake steering.
-
         Args:
             ws (float): The wind speed used in floris for the yaw optimization.
             wd (float): The wind direction used in floris for the yaw
@@ -276,11 +267,9 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
             ti (float, optional): An optional turbulence intensity value for
                 the yaw optimization. Defaults to None, meaning TI will not be
                 included in the AEP calculations.
-
         Returns:
             - **df_opt** (*Pandas DataFrame*) - DataFrame with a single row,
                 containing the following columns:
-
                 - **ws** (*float*) - The wind speed value for the row.
                 - **wd** (*float*) - The wind direction value for the row.
                 - **ti** (*float*) - The turbulence intensity value for the
@@ -323,6 +312,7 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
                     wind_direction=wd, wind_speed=ws, turbulence_intensity=ti
                 )
 
+            self.initial_farm_power = initial_farm_power
             opt_yaw_angles = self._optimize()
 
             if np.sum(opt_yaw_angles) == 0:
@@ -398,12 +388,10 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
         direction, and optionally TI combinations. The optimization for
         different wind condition combinations is parallelized using the mpi4py
         futures module.
-
         Returns:
             pandas.DataFrame: A pandas DataFrame with the same number of rows
             as the length of the wd and ws arrays, containing the following
             columns:
-
                 - **ws** (*float*) - The wind speed values for which power is
                 computed (m/s).
                 - **wd** (*float*) - The wind direction value for which power
@@ -460,6 +448,7 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
 
         df_base.reset_index(drop=True, inplace=True)
 
+        self.df_base = df_base
         return df_base
 
     def optimize(self):
@@ -469,12 +458,10 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
         series of wind speed, wind direction, and optionally TI combinations.
         The optimization for different wind condition combinations is
         parallelized using the mpi4py.futures module.
-
         Returns:
             pandas.DataFrame: A pandas DataFrame with the same number of rows
             as the length of the wd and ws arrays, containing the following
             columns:
-
                 - **ws** (*float*) - The wind speed values for which the yaw
                 angles are optimized and power is computed (m/s).
                 - **wd** (*float*) - The wind direction values for which the
@@ -513,7 +500,10 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
         with MPIPoolExecutor() as executor:
             if self.ti is None:
                 for df_opt_one in executor.map(
-                    self._optimize_one_case, self.ws.values, self.wd.values
+                    self._optimize_one_case,
+                    self.ws.values,
+                    self.wd.values,
+                    self.df_base.power_baseline.values,
                 ):
 
                     # add variables to dataframe
@@ -523,6 +513,7 @@ class YawOptimizationWindRoseParallel(YawOptimizationWindRose, LoggerBase):
                     self._optimize_one_case,
                     self.ws.values,
                     self.wd.values,
+                    self.df_base.power_baseline.values,
                     self.ti.values,
                 ):
 
