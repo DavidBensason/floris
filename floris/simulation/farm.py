@@ -61,6 +61,7 @@ class Farm():
     """
 
     def __init__(self, instance_dictionary, turbine, wake):
+        self.instance_dictionary = instance_dictionary
         self.name = instance_dictionary["name"]
         properties = instance_dictionary["properties"]
         layout_x = properties["layout_x"]

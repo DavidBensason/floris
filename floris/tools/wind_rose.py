@@ -30,7 +30,7 @@ import pickle
 from pyproj import Proj
 import floris.utilities as geo
 from ..utilities import setup_logger
-
+import pdb
 
 class WindRose():
     """
@@ -695,7 +695,7 @@ class WindRose():
 
         # Case for turbine height (ht) matching discrete avaliable height (h_range) 
         if ht in h_range:
-             
+                         
             d = self.load_wind_toolkit_hsds(lat, 
                                                 lon, 
                                                 ht, 
@@ -857,7 +857,8 @@ class WindRose():
         df['ws'] = ws_dset[:, Location_idx[0], Location_idx[1]]
         if include_ti:
             L = self.obkv_dset_to_L(obkv_dset, Location_idx)
-            ti = self.ti_calculator_IU2(L)
+            #ti = self.ti_calculator_IU2(L)
+            ti = self.ti_peetz_model(L)
             df['ti'] = ti
         df['datetime'] = dt['datetime']
 
@@ -933,6 +934,28 @@ class WindRose():
                 TI = 0.2 
             ti_set.append(TI)
         return ti_set
+
+    def ti_peetz_model(self,L):
+        #pdb.set_trace()
+        ti_set=[]
+        for i in L:
+            actual = 2* (1/i)
+            
+            ## Neutral
+            if -0.1 <= actual <= 0.1:
+                TI = 0.07
+            
+            ## Stable
+            elif actual > 0.1:
+                TI = 0.04
+            
+            ## Unstable
+            else:
+                TI = 0.10
+            
+            ti_set.append(TI)
+        return ti_set
+
 
     def indices_for_coord(self, f, lat_index, lon_index):
         #TODO This function is tough for me to follow. What is f?
@@ -1085,7 +1108,7 @@ class WindRose():
                 containing wind rose plot.
         """
         # Based on code provided by Patrick Murphy
-
+        #pdb.set_trace()
         # Resample data onto bins
         df_plot = self.resample_wind_direction(self.df, wd=wd_bins)
 
@@ -1124,6 +1147,68 @@ class WindRose():
         ax.set_xticklabels(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
     
         return ax
+
+    def plot_wind_rose_peetz(self,
+                           ax=None,
+                           color_map='viridis_r',
+                           ti_right_edges=np.array([0.05, 0.08, 0.11]),
+                           wd_bins=np.arange(0, 360, 15.)):
+            """
+            Generate wind rose plot of TI vs. wind direction. 
+            If no axis is provided, make a new one.
+            Args:
+                ax (:py:class:`matplotlib.pyplot.axes`, optional): Figure axes to which data should
+                    be plotted. Defaults to None.
+                color_map (str, optional): name of colormap.
+                    Defaults to 'viridis_r'.
+                ti_right_edges (np.array, optional): upper bounds of turbulence
+                    intensity bins. Defaults to np.array([0.06, 0.1, 0.14, 0.18,0.22]).
+                wd_bins (np.array, optional): wind direction bin limits.
+                    Defaults to np.arange(0, 360, 15.).
+            Returns:
+                ax (:py:class:`matplotlib.pyplot.axes`): Figure axes
+                    containing wind rose plot.
+            """
+            # Based on code provided by Patrick Murphy
+            #pdb.set_trace()
+            # Resample data onto bins
+            df_plot = self.resample_wind_direction(self.df, wd=wd_bins)
+    
+            # Make labels for TI based on edges
+            ti_step = ti_right_edges[1] - ti_right_edges[0]
+            ti_labels = ['%.2f-%.2f ' % (w - ti_step, w) for w in ti_right_edges]
+    
+            # Grab the wd_step
+            wd_step = wd_bins[1] - wd_bins[0]
+    
+            # Set up figure
+            if ax is None:
+                _, ax = plt.subplots(subplot_kw=dict(polar=True))
+    
+            # Get a color array
+            color_array = cm.get_cmap(color_map, len(ti_right_edges))
+    
+            for wd_idx, wd in enumerate(wd_bins):
+                rects = list()
+                df_plot_sub = df_plot[df_plot.wd == wd]
+                for ti_idx, ti in enumerate(ti_right_edges[::-1]):
+                    plot_val = df_plot_sub[df_plot_sub.ti <= ti].freq_val.sum(
+                    )  # Get the sum of frequency up to this wind speed
+                    rects.append(
+                        ax.bar(np.radians(wd),
+                               plot_val,
+                               width=0.9 * np.radians(wd_step),
+                               color=color_array(ti_idx),
+                               edgecolor='k'))
+      
+            # Configure the plot
+            ax.legend(reversed(rects), ti_labels, loc='best',title='TI')
+            ax.set_theta_direction(-1)
+            ax.set_theta_offset(np.pi/2.0)
+            ax.set_theta_zero_location("N")
+            ax.set_xticklabels(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
+        
+            return ax
 
     def plot_ti_ws(self, ax=None, ws_bins=np.arange(0, 26, 1.)):
         """

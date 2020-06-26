@@ -944,6 +944,7 @@ class FlorisInterface():
             self.calculate_wake(yaw_angles=yaw_angles, no_wake=no_wake)
             return list(mean_farm_power)
         else:
+            
             turb_powers = [
                 turbine.power for turbine in self.floris.farm.turbines
             ]

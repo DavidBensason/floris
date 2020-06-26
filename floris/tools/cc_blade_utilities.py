@@ -8,7 +8,7 @@ import numpy as np
 import pickle
 import copy
 
-from ccblade import CCAirfoil, CCBlade
+from CCBlade.ccblade.ccblade import CCAirfoil, CCBlade
 
 from scipy import interpolate
 

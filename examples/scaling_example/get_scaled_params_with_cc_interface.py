@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 import pickle
 import floris.tools.cc_blade_utilities as ccb
-from ccblade import CCAirfoil, CCBlade
+#from ccblade import CCAirfoil, CCBlade
 
 # Some useful constants
 degRad = np.pi/180.

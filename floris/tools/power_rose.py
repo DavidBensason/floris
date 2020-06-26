@@ -337,7 +337,120 @@ class PowerRose():
             ax.set_xlabel('Wind Direction (deg)')
 
             return axarr
+        
+    def plot_by_ws(self,axarr=None):
+        """
+        Bin energy data by direction and plot. Plots include: 
+        1) The normalized energy production by wind direction for the baseline and 
+        optimal wake steering cases. 
+        2) The wind farm efficiency (energy production relative to energy production 
+        without wake losses) by wind direction for the baseline and optimal wake steering cases. 
+        3) Percent gain in energy production with optimal wake steering by wind direction.
 
+        Args:
+            axarr (numpy.ndarray of matplotlib.axes._subplots.AxesSubplot objects, optional): 
+                array of 3 figure axes to which data should be plotted. Default is None. 
+
+        Returns:
+            axarr (numpy.ndarray of matplotlib.axes._subplots.AxesSubplot objects): 
+                list of axis handles to which the data is plotted.
+        """
+
+        df = self.df_power.copy(deep=True)
+        df = df.groupby('ws').sum().reset_index()
+
+
+        if self.use_opt:
+
+            if axarr is None:
+                fig, axarr = plt.subplots(3, 1, sharex=True)
+
+            ax = axarr[0]
+            ax.plot(df.ws,
+                    df.energy_baseline / np.max(df.energy_opt),
+                    label='Baseline',
+                    color='k')
+            ax.axhline(np.mean(df.energy_baseline / np.max(df.energy_opt)),
+                    color='r',
+                    ls='--')
+            ax.plot(df.ws,
+                    df.energy_opt / np.max(df.energy_opt),
+                    label='Optimized',
+                    color='r')
+            ax.axhline(np.mean(df.energy_opt / np.max(df.energy_opt)),
+                    color='r',
+                    ls='--')
+            ax.set_ylabel('Normalized Energy')
+            ax.grid(True)
+            ax.legend()
+            ax.set_title(self.name)
+
+            ax = axarr[1]
+            ax.plot(df.ws,
+                    df.energy_baseline / df.energy_no_wake,
+                    label='Baseline',
+                    color='k')
+            ax.axhline(np.mean(df.energy_baseline) / np.mean(df.energy_no_wake),
+                    color='k',
+                    ls='--')
+            ax.plot(df.ws,
+                    df.energy_opt / df.energy_no_wake,
+                    label='Optimized',
+                    color='r')
+            ax.axhline(np.mean(df.energy_opt) / np.mean(df.energy_no_wake),
+                    color='r',
+                    ls='--')
+            ax.set_ylabel('Wind Farm Efficiency')
+            ax.grid(True)
+            ax.legend()
+
+            ax = axarr[2]
+            ax.plot(
+                df.ws,
+                100. * (df.energy_opt - df.energy_baseline) / df.energy_baseline,
+                'r')
+            ax.axhline(100. * (df.energy_opt.mean() - df.energy_baseline.mean()) /
+                    df.energy_baseline.mean(),
+                    color='r',
+                    ls='--')
+            ax.set_ylabel('Percent Gain')
+            ax.set_xlabel('Wind Speed (m/s)')
+
+            return axarr
+
+        else:
+
+            if axarr is None:
+                fig, axarr = plt.subplots(2, 1, sharex=True)
+
+            ax = axarr[0]
+            ax.plot(df.ws,
+                    df.energy_baseline / np.max(df.energy_baseline),
+                    label='Baseline',
+                    color='k')
+            ax.axhline(np.mean(df.energy_baseline / np.max(df.energy_baseline)),
+                    color='r',
+                    ls='--')
+            ax.set_ylabel('Normalized Energy')
+            ax.grid(True)
+            ax.legend()
+            ax.set_title(self.name)
+
+            ax = axarr[1]
+            ax.plot(df.ws,
+                    df.energy_baseline / df.energy_no_wake,
+                    label='Baseline',
+                    color='k')
+            ax.axhline(np.mean(df.energy_baseline) / np.mean(df.energy_no_wake),
+                    color='k',
+                    ls='--')
+            ax.set_ylabel('Wind Farm Efficiency')
+            ax.grid(True)
+            ax.legend()
+
+            ax.set_xlabel('Wind Speed (m/s)')
+
+            return axarr
     # def wake_loss_at_direction(self, wd):
     #     """
     #     Calculate wake losses for a given direction. Plot rose figures

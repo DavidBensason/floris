@@ -562,9 +562,9 @@ class YawOptimizationWindRose(Optimization):
                         wind_speed=[self.ws[i]],
                         turbulence_intensity=self.ti[i]
                     )
-
+                #pdb.set_trace()
                 opt_yaw_angles = self._optimize()
-
+                #pdb.set_trace()
                 if np.sum(opt_yaw_angles) == 0:
                     print('No change in controls suggested for this inflow \
                         condition...')
