@@ -10,22 +10,25 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# See read the https://floris.readthedocs.io for documentation
+# See https://floris.readthedocs.io for documentation
+
 
 # This example illustrates changing the properties of some of the turbines
 # This can be used to setup farms of different turbines
 
 import matplotlib.pyplot as plt
+
 import floris.tools as wfct
+
 
 # Initialize the FLORIS interface fi
 fi = wfct.floris_interface.FlorisInterface("../example_input.json")
 
 # Set to 2x2 farm
-fi.reinitialize_flow_field(layout_array=[[0,0,600,600],[0,300,0,300]])
+fi.reinitialize_flow_field(layout_array=[[0, 0, 600, 600], [0, 300, 0, 300]])
 
 # Change turbine 0 and 3 to have a 35 m rotor diameter
-fi.change_turbine([0,3],{'rotor_diameter':35})
+fi.change_turbine([0, 3], {"rotor_diameter": 35})
 
 # Calculate wake
 fi.calculate_wake()

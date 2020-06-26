@@ -10,47 +10,50 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# See read the https://floris.readthedocs.io for documentation
+# See https://floris.readthedocs.io for documentation
+
 
 import matplotlib.pyplot as plt
+
 import floris.tools as wfct
+
 
 # Initialize the FLORIS interface fi
 fi = wfct.floris_interface.FlorisInterface("../example_input.json")
 
 # Show the current model parameters
-print('All the model parameters and their current values:\n')
+print("All the model parameters and their current values:\n")
 fi.show_model_parameters()
-print('\n')
+print("\n")
 
 # Show the current model parameters with docstring info
-print('All the model parameters, their current values, and docstrings:\n')
+print("All the model parameters, their current values, and docstrings:\n")
 fi.show_model_parameters(verbose=True)
-print('\n')
+print("\n")
 
 # Show a specific model parameter with its docstring
-print('A specific model parameter, its current value, and its docstring:\n')
-fi.show_model_parameters(params=['ka'], verbose=False)
-print('\n')
+print("A specific model parameter, its current value, and its docstring:\n")
+fi.show_model_parameters(params=["ka"], verbose=False)
+print("\n")
 
 # Get the current model parameters
 model_params = fi.get_model_parameters()
-print('The current model parameters:\n')
+print("The current model parameters:\n")
 print(model_params)
-print('\n')
+print("\n")
 
 # Set parameters on the current model
-print('Set specific model parameters on the current wake model:\n')
+print("Set specific model parameters on the current wake model:\n")
 params = {
-    'Wake Velocity Parameters': {'alpha': 0.2},
-    'Wake Deflection Parameters': {'alpha': 0.2},
-    'Wake Turbulence Parameters': {'ti_constant': 1.0}
+    "Wake Velocity Parameters": {"alpha": 0.2},
+    "Wake Deflection Parameters": {"alpha": 0.2},
+    "Wake Turbulence Parameters": {"ti_constant": 1.0},
 }
 fi.set_model_parameters(params)
-print('\n')
+print("\n")
 
 # Check that the parameters were changed
-print('Observe that the requested paremeters changes have been made:\n')
+print("Observe that the requested paremeters changes have been made:\n")
 model_params = fi.get_model_parameters()
 print(model_params)
-print('\n')
+print("\n")

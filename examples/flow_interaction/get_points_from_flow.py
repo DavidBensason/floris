@@ -10,13 +10,15 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# See read the https://floris.readthedocs.io for documentation
+# See https://floris.readthedocs.io for documentation
 
 # Demonstrate getting arbitrary set of points from the flow
 
-import matplotlib.pyplot as plt
-import floris.tools as wfct
 import numpy as np
+import matplotlib.pyplot as plt
+
+import floris.tools as wfct
+
 
 # Initialize the FLORIS interface fi
 fi = wfct.floris_interface.FlorisInterface("../example_input.json")
@@ -25,12 +27,12 @@ fi = wfct.floris_interface.FlorisInterface("../example_input.json")
 fi.calculate_wake()
 
 # Define a set points running through one row
-x_points = np.arange(-100,1000,1)
+x_points = np.arange(-100, 1000, 1)
 y_points = np.zeros_like(x_points)
 z_points = np.ones_like(x_points) * 100
 
 # Get the values
-flow_points = fi.get_set_of_points(x_points,y_points,z_points)
+flow_points = fi.get_set_of_points(x_points, y_points, z_points)
 
 print(flow_points)
 
@@ -38,13 +40,13 @@ print(flow_points)
 hor_plane = fi.get_hor_plane()
 
 # Plot and show
-fig, axarr = plt.subplots(1,2)
+fig, axarr = plt.subplots(1, 2)
 
 ax = axarr[0]
 wfct.visualization.visualize_cut_plane(hor_plane, ax=ax)
-ax.plot(x_points,y_points,'r',lw=3)
+ax.plot(x_points, y_points, "r", lw=3)
 
 ax = axarr[1]
-ax.plot(flow_points.x,flow_points.u)
+ax.plot(flow_points.x, flow_points.u)
 
 plt.show()

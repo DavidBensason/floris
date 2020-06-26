@@ -10,10 +10,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# See read the https://floris.readthedocs.io for documentation
+# See https://floris.readthedocs.io for documentation
+
 
 import matplotlib.pyplot as plt
+
 import floris.tools as wfct
+
 
 # Initialize the FLORIS interface fi
 # For basic usage, the florice interface provides a simplified interface to

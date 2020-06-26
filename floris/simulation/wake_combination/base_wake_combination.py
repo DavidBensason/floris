@@ -10,12 +10,14 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-class WakeCombination():
-    """
-    The WakeCombination class provides methods for combining the base flow field with the velocity deficits from the wake models.
+from ...logging_manager import LoggerBase
 
-    Returns:
-        WakeCombination: An instantiated WakeCombination object.
+
+class WakeCombination(LoggerBase):
+    """
+    This is the super-class for all combination models included in FLORIS.
+    These models define how the wake velocity deficits are combined with each
+    other and the freestream velocity field.
     """
 
     def __init__(self):

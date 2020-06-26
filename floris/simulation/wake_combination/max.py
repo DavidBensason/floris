@@ -11,36 +11,40 @@
 # the License.
 
 import numpy as np
-from ...utilities import setup_logger
+
 from .base_wake_combination import WakeCombination
 
 
 class MAX(WakeCombination):
     """
-    MAX is a subclass of 
-    :py:class:`floris.simulation.wake_combination.WakeCombination` 
-    which uses the maximum wake velocity deficit to add to the 
-    base flow field. For more information, refer to: "Limitations to the
-    validity of single wake superposition in wind farm yield assessment",
-    K. Gunn et al 2016 J. Phys.: Conf. Ser. 749 012003.
+    MAX is a subclass of
+    :py:class:`floris.simulation.wake_combination.WakeCombination`
+    which uses the maximum wake velocity deficit to add to the
+    base flow field. For more information, refer to
+    :cite:`max-gunn2016limitations`.
+
+    References:
+        .. bibliography:: /source/zrefs.bib
+            :style: unsrt
+            :filter: docname in docnames
+            :keyprefix: max-
     """
 
     def __init__(self):
         super().__init__()
-        self.logger = setup_logger(name=__name__)
         self.model_string = "max"
 
     def function(self, u_field, u_wake):
         """
-        This method combines the base flow field with the maximum velocity 
-        deficits.
+        Incorporates the velicty deficits into the base flow field by
+        selecting the maximum of the two for each point.
 
         Args:
             u_field (np.array): The base flow field.
-            u_wake (np.array): The wake velocity deficits.
+            u_wake (np.array): The wake to apply to the base flow field.
 
         Returns:
-            array: A maximum combination of the base flow field 
-            and the velocity deficits.
+            np.array: The resulting flow field after applying the wake to the
+                base.
         """
         return np.maximum(u_wake, u_field)

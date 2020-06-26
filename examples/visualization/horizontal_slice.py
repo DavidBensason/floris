@@ -10,13 +10,16 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# See read the https://floris.readthedocs.io for documentation
+# See https://floris.readthedocs.io for documentation
+
 
 import matplotlib.pyplot as plt
+
 import floris.tools as wfct
 
+
 # Initialize the FLORIS interface fi
-fi = wfct.floris_interface.FlorisInterface('../example_input.json')
+fi = wfct.floris_interface.FlorisInterface("../example_input.json")
 
 # Calculate wake
 fi.calculate_wake()

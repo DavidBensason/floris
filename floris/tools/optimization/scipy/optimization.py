@@ -12,8 +12,11 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# See https://floris.readthedocs.io for documentation
+
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 try:
     from mpi4py.futures import MPIPoolExecutor
@@ -21,19 +24,22 @@ except ImportError:
     pass
 
 
-class Optimization():
+class Optimization:
     """
-    Base optimization class.
-    Args:
-        fi (:py:class:`floris.tools.floris_interface.FlorisInterface`): 
-            Interface from FLORIS to the tools package.
-    Returns:
-        Optimization: An instantiated Optimization object.
+    Optimization is the base optimization class for
+    `~.tools.optimization.scipy` subclasses. Contains some common
+    methods and properties that can be used by the individual optimization
+    classes.
     """
 
     def __init__(self, fi):
         """
-        Instantiate Optimization object and its parameters.
+        Initializes an Optimization object by assigning a
+        FlorisInterface object.
+
+        Args:
+            fi (:py:class:`~.tools.floris_interface.FlorisInterface`):
+                Interface used to interact with the Floris object.
         """
         self.fi = fi
 
@@ -43,21 +49,20 @@ class Optimization():
         pass
 
     def _norm(self, val, x1, x2):
-        return (val - x1)/(x2 - x1)
-    
+        return (val - x1) / (x2 - x1)
+
     def _unnorm(self, val, x1, x2):
-        return np.array(val)*(x2 - x1) + x1
+        return np.array(val) * (x2 - x1) + x1
 
     # Properties
 
     @property
     def nturbs(self):
         """
-        This property returns the number of turbines in the FLORIS 
-        object.
+        Number of turbines in the :py:class:`~.farm.Farm` object.
+
         Returns:
-            nturbs (int): The number of turbines in the FLORIS object.
+            int
         """
         self._nturbs = len(self.fi.floris.farm.turbine_map.turbines)
         return self._nturbs
-        

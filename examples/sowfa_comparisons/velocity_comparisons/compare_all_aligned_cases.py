@@ -10,25 +10,29 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# See read the https://floris.readthedocs.io for documentation
+# See https://floris.readthedocs.io for documentation
+
 
 # Compare 5 turbine results to SOWFA in 8 m/s, higher TI case
 
-import matplotlib.pyplot as plt
-import floris.tools as wfct
-import numpy as np
-import pandas as pd
 import copy
 import pickle
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+import floris.tools as wfct
+
+
 ## Grab certain hi-TI five simulations from saved SOWFA data set
-df_sowfa = pd.read_pickle('../sowfa_data_set/sowfa_data_set.p')
+df_sowfa = pd.read_pickle("../sowfa_data_set/sowfa_data_set.p")
 
 # Limit to aligned
-df_sowfa = df_sowfa[df_sowfa.yaw.apply(lambda x: np.max(np.abs(x)))==0.0]
+df_sowfa = df_sowfa[df_sowfa.yaw.apply(lambda x: np.max(np.abs(x))) == 0.0]
 
 # Load the saved FLORIS interfaces
-fi_dict = pickle.load( open( "../floris_models.p", "rb" ) )
+fi_dict = pickle.load(open("../floris_models.p", "rb"))
 
 # Resimulate the SOWFA cases
 for floris_label in fi_dict:
@@ -38,44 +42,44 @@ for floris_label in fi_dict:
     df_sowfa[floris_label] = df_sowfa[floris_label].astype(object)
     for i, row in df_sowfa.iterrows():
 
-
         # Match the layout, wind_speed and TI
         fi.reinitialize_flow_field(
-            layout_array=[row.layout_x,row.layout_y],
+            layout_array=[row.layout_x, row.layout_y],
             wind_speed=[row.floris_U0],
-            turbulence_intensity=[row.floris_TI]
+            turbulence_intensity=[row.floris_TI],
         )
 
         # Calculate wake with certain yaw
-        fi.calculate_wake(yaw_angles = row.yaw)
+        fi.calculate_wake(yaw_angles=row.yaw)
 
         # Save the result
-        df_sowfa.at[i,floris_label] = np.round(
-            np.array(fi.get_turbine_power())/1000.,2
+        df_sowfa.at[i, floris_label] = np.round(
+            np.array(fi.get_turbine_power()) / 1000.0, 2
         )
 
 # Compute an error term
 for floris_label in fi_dict:
     (fi, floris_color, floris_marker) = fi_dict[floris_label]
-    df_sowfa['error_' + floris_label] = df_sowfa[floris_label] - df_sowfa.power
+    df_sowfa["error_" + floris_label] = df_sowfa[floris_label] - df_sowfa.power
 
 # List the error by number of wakes and by floris interface
-for num_wakes in range(1,6):
-    print('%d Wakes Impinging ================' % num_wakes)
-    print('Model\t\tRSME\tMean Error')
+for num_wakes in range(1, 6):
+    print("%d Wakes Impinging ================" % num_wakes)
+    print("Model\t\tRSME\tMean Error")
     for floris_label in fi_dict:
         (fi, floris_color, floris_marker) = fi_dict[floris_label]
         result = []
         for i, row in df_sowfa.iterrows():
-            for e in row['error_' + floris_label][row.wake_table==num_wakes]:
+            for e in row["error_" + floris_label][row.wake_table == num_wakes]:
                 result.append(e)
 
         result = np.array(result)
         print(
-            '%s\t\t%.1f\t%.1f' %
-            (
-                floris_label,np.sqrt(np.sum(result**2)/len(result)),
-                np.mean(result)
+            "%s\t\t%.1f\t%.1f"
+            % (
+                floris_label,
+                np.sqrt(np.sum(result ** 2) / len(result)),
+                np.mean(result),
             )
         )
 

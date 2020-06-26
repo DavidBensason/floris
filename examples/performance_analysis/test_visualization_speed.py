@@ -10,15 +10,18 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# See read the https://floris.readthedocs.io for documentation
+# See https://floris.readthedocs.io for documentation
 
 # Short demo of how probe points currently added for
 # visualization and demonstration of speed
 
-import matplotlib.pyplot as plt
-import floris.tools as wfct
-import numpy as np
 import time
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+import floris.tools as wfct
+
 
 # Initialize the FLORIS interface fi
 fi = wfct.floris_interface.FlorisInterface("../example_input.json")
@@ -32,19 +35,19 @@ dist = d * d_space
 fi.calculate_wake()
 
 # Declare plots
-fig, axarr = plt.subplots(2,2,figsize=(10,10))
+fig, axarr = plt.subplots(2, 2, figsize=(10, 10))
 
-for n_row, ax in zip([5,6,7,8],axarr.flatten()):
+for n_row, ax in zip([5, 6, 7, 8], axarr.flatten()):
 
     x_array = []
     y_array = []
 
-    for x in np.arange(0,dist * n_row,dist):
-        for y in np.arange(0,dist * n_row,dist):
+    for x in np.arange(0, dist * n_row, dist):
+        for y in np.arange(0, dist * n_row, dist):
             x_array.append(x)
             y_array.append(y)
 
-    fi.reinitialize_flow_field(layout_array=(x_array,y_array))
+    fi.reinitialize_flow_field(layout_array=(x_array, y_array))
     fi.calculate_wake()
 
     # Use the new method=====================================
@@ -53,7 +56,7 @@ for n_row, ax in zip([5,6,7,8],axarr.flatten()):
     hor_plane = fi.get_hor_plane()
     wfct.visualization.visualize_cut_plane(hor_plane, ax=ax)
     end = time.time()
-    ax.set_title('%d Turbs, time = %.1fs' % (n_row*n_row,end-start))
+    ax.set_title("%d Turbs, time = %.1fs" % (n_row * n_row, end - start))
 
 # Show the plot
 plt.show()
