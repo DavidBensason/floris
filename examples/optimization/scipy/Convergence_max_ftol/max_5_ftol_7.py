@@ -469,6 +469,7 @@ if __name__ == '__main__':
         	df,
         	df_base['power_no_wake'],
         	df_base['power_baseline'],
+            df_opt['power_opt']
         )
         
         fig, axarr = plt.subplots(3, 1, sharex=True, figsize=(6.4, 6.5))
@@ -482,14 +483,15 @@ if __name__ == '__main__':
         #plt.show()
     
         #Save final data as a pickle 
+        data = data.append(pd.DataFrame({'Farm Name': str(kf), 'Rated_Power': P_r, 'ftol':ftol,'#Turbine': len(kf), 
+                                             'Maxiter': maxiter,'AEP_No_Wake': power_rose.total_no_wake, 
+                                             'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
+                                             '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
+                                             'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
+                                             'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
+                                             index=[0]), ignore_index=True)
         
         
-        data = data.append(pd.DataFrame({'Farm Name': str(kf),'Maxiter': maxiter, 'ftol':ftol, '#Turbine': int(Num_Turb),'Turbine_D':int(D),
-                                         'Turb_spc_rel': float(rel_spc),'Farm_lat':wf_coordinate[0], 'Farm_lon': wf_coordinate[1], 
-                                         'AEP_No_Wake': power_rose.total_no_wake, 
-                                         'AEP_Baseline': power_rose.total_baseline,'%_Baseline': 100.* power_rose.baseline_percent, 
-                                         'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss}, 
-                                         index=[0]), ignore_index=True)
         table_pickle = "Pickle_table_" + str(kf) + "_without_unc"
         data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/convergence_max_ftol/{}'.format(table_pickle))
         
@@ -513,8 +515,6 @@ if __name__ == '__main__':
     
     else: 
         raise SystemExit("None Valid Optimization Method Chosen")
-
-
 
 
 
