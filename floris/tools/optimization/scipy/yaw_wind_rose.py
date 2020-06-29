@@ -46,6 +46,7 @@ class YawOptimizationWindRose(Optimization):
         include_unc=False,
         unc_pmfs=None,
         unc_options=None,
+        calc_init_power=True
     ):
         """
         Instantiate YawOptimizationWindRose object with a FlorisInterface
@@ -125,6 +126,9 @@ class YawOptimizationWindRose(Optimization):
                 If none are specified, default values of
                 {'std_wd': 4.95, 'std_yaw': 1.75, 'pmf_res': 1.0,
                 'pdf_cutoff': 0.995} are used. Defaults to None.
+            calc_init_power (bool, optional): If True, calculates initial wind
+                farm power for each set of wind conditions upon initialization.
+                Defaults to True.
         """
         super().__init__(fi)
 
@@ -164,9 +168,8 @@ class YawOptimizationWindRose(Optimization):
             include_unc=include_unc,
             unc_pmfs=unc_pmfs,
             unc_options=unc_options,
+            calc_init_power=calc_init_power
         )
-
-        self._get_initial_farm_power()
 
     # Private methods
 
@@ -290,6 +293,7 @@ class YawOptimizationWindRose(Optimization):
         include_unc=None,
         unc_pmfs=None,
         unc_options=None,
+        calc_init_power=True
     ):
         """
         This method reinitializes any optimization parameters that are
@@ -363,6 +367,8 @@ class YawOptimizationWindRose(Optimization):
                 If none are specified, default values of
                 {'std_wd': 4.95, 'std_yaw': 1.75, 'pmf_res': 1.0,
                 'pdf_cutoff': 0.995} are used. Defaults to None.
+            calc_init_power (bool, optional): If True, calculates initial wind
+                farm power for each set of wind conditions. Defaults to True.
         """
 
         if wd is not None:
@@ -466,6 +472,9 @@ class YawOptimizationWindRose(Optimization):
                 "yaw_unc": yaw_unc,
                 "yaw_unc_pmf": yaw_unc_pmf,
             }
+
+        if calc_init_power:
+            self._get_initial_farm_power()
 
     def calc_baseline_power(self):
         """

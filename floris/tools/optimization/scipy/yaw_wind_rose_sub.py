@@ -29,6 +29,7 @@ from examples.optimization.scipy.Graph_Class import Graph
 import copy 
 from floris.simulation import TurbineMap
 from floris.simulation.farm import Farm
+import pdb
 
 class YawOptimizationWindRose(Optimization):
     """
@@ -596,6 +597,18 @@ class YawOptimizationWindRose(Optimization):
 
         return df_base
 
+    @property
+    def nturbs_sub(self):
+        """
+        This property returns the number of turbines in the FLORIS 
+        object.
+
+        Returns:
+            nturbs (int): The number of turbines in the FLORIS object.
+        """
+        self._nturbs = len(self.fi_sub.floris.farm.turbine_map.turbines)
+        return self._nturbs
+    
     def optimize(self):
         """
         For a series of (wind speed, direction, ti (optional)) combinations,
@@ -658,7 +671,7 @@ class YawOptimizationWindRose(Optimization):
                                
                 farm_instance_dict = self.fi.floris.farm.instance_dictionary
                 
-                sub_farm = copy.deepcopy(farm_instance_dict)[0]
+                sub_farm = copy.deepcopy(farm_instance_dict)
                 sub_farm['properties']['layout_x'] = sub_farm_xcoord
                 sub_farm['properties']['layout_y'] = sub_farm_ycoord
             
@@ -669,6 +682,8 @@ class YawOptimizationWindRose(Optimization):
                 farm_1.flow_field.turbine_map= turbine_map
                 self.fi_sub= copy.deepcopy(self.fi)
                 self.fi_sub.floris.farm = farm_1
+                
+                
             # Optimizing wake redirection control
 
                 turbine_id = list(cc[j])
@@ -681,7 +696,7 @@ class YawOptimizationWindRose(Optimization):
                         #pdb.set_trace()
                         self.fi_sub.reinitialize_flow_field(
                             wind_direction=[self.wd[i]], wind_speed=[self.ws[i]], turbulence_intensity=[self.ti[i]])
-    
+                    #pdb.set_trace()
                     opt_yaw_angles = self._optimize_sub() ###MAYBE NOT SUB OPTION. 
                     for ang in range(len(opt_yaw_angles)): 
                         yaw_opt_tot= yaw_opt_tot.append({'yaw_opt': opt_yaw_angles[ang],'Turb_ID':turbine_id[ang]}, ignore_index=True)
@@ -692,7 +707,7 @@ class YawOptimizationWindRose(Optimization):
                     # optimized power
                     #pdb.set_trace()
                     self.fi_sub.calculate_wake(yaw_angles=opt_yaw_angles)
-                    
+                    #pdb.set_trace()
                     power_opt = self.fi_sub.get_turbine_power(include_unc=self.include_unc, \
                         unc_pmfs=self.unc_pmfs, unc_options=self.unc_options)
                     #power_opt = self.fi.get_turbine_power(include_unc=self.include_unc, \
