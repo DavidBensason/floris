@@ -40,7 +40,7 @@ if __name__ == '__main__':
     
     maxiter = 3
     ftol = 1e-7
-    opt_options = {'maxiter': maxiter, 'disp': False,'iprint': 1, 'ftol': ftol}
+    opt_options = {'maxiter': maxiter, 'disp': True,'iprint': 2, 'ftol': ftol}
 
     data = pd.DataFrame([])
     # Define wind farm coordinates and layout
