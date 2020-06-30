@@ -203,9 +203,9 @@ if __name__ == '__main__':
     plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/wind_rose/{}'.format(windrose_name))
     
     #Plot Ti rose 
-    wind_rose.plot_wind_rose_ti() 
-    ti_rose = str(kf['p_name'].iloc[0]) + "_ti_rose.png"
-    plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/ti_rose/{}'.format(ti_rose))
+    #wind_rose.plot_wind_rose_ti() 
+    #ti_rose = str(kf['p_name'].iloc[0]) + "_ti_rose.png"
+    #plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/ti_rose/{}'.format(ti_rose))
     
     #Plot Ti Winspeed dist.
     #wind_rose.plot_ti_ws() ## ALSO NOT WORKINg
