@@ -93,8 +93,10 @@ if __name__ == '__main__':
     N_turb = len(layout_x)
     
     fi.reinitialize_flow_field(layout_array=(layout_x, layout_y), wind_direction=[270.0],wind_speed=[8.0])
+    fi.reinitialize_flow_field(turbulence_intensity=[0.08]) ### Set turbuelence intensity here 
     fi.calculate_wake()
-    
+    opt_options = {'maxiter': 20, 'disp': False,'iprint': 1, 'ftol': 1e-6, 'eps': 0.01}
+
     #Diameter and Rated power based on the wind farm
     D = kf["t_rd"]
     P_r = kf["t_cap"]
@@ -178,7 +180,7 @@ if __name__ == '__main__':
     	                                                    ht = int(hub_h.iloc[0]), #should this be a float 
     	                                                    wd = wd_list,
     	                                                    ws = ws_list,
-                                                            include_ti=True,
+                                                            include_ti=False,
                                                             limit_month = None,
     	                                                    st_date = None,
     	                                                    en_date = None)
@@ -186,7 +188,7 @@ if __name__ == '__main__':
     
     else:
         file_name = str(kf['p_name'].iloc[0]) + "_Wind_Farm.p"
-        df = wind_rose.load(r'/home/dbensaso/code/WakeSteering_US/Working_dir_WS_US/Saved_fig_data/pickle_files/{}'.format(file_name))
+        df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle_subset_no_ti/{}'.format(file_name))
         
         #    file_name = str(kf['p_name'].iloc[0]) + "_Wind Farm.p"
         #    df = wind_rose.load(r'C:\Users\dbensaso\Documents\Code\WakeSteering_US\Working_dir_WS_US\Saved_fig_data\pickle_files\{}'.format(file_name))
@@ -447,17 +449,25 @@ if __name__ == '__main__':
     elif Optimization_case == "Just_Base":
         
         # Instantiate the Optimization object FOR NOW ASSUME TI WORKS
-        yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws, df.ti,
+        yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws,
                                        minimum_yaw_angle=min_yaw, 
                                        maximum_yaw_angle=max_yaw,
                                        minimum_ws=minimum_ws,
-                                       maximum_ws=maximum_ws)
+                                       maximum_ws=maximum_ws,
+                                       opt_options = opt_options)
     
         # Determine baseline power with and without wakes
         df_base = yaw_opt.calc_baseline_power()
         # Perform optimization
         df_opt = yaw_opt.optimize()
-    
+        
+        ## Save df_base and df_opt to pickle file 
+        df_base_pickle = "Df_base_" + str(kf['p_name'].iloc[0]) + "_without_unc"
+        df_base.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Base_pickle/{}'.format(df_base_pickle))
+        
+        df_opt_pickle = "Df_opt_" + str(kf['p_name'].iloc[0]) + "_without_unc"
+        df_opt.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Opt_pickle/{}'.format(df_opt_pickle))
+        
                
         # Summarize using the power rose module
         case_name = 'Example '+str(kf['p_name'].iloc[0])+ ' Wind Farm without UNC'

@@ -77,7 +77,7 @@ if __name__ == '__main__':
     data1 = pd.DataFrame([]) #Only filled for Unc case
     #for i in dw:
         
-    kf = (mf.loc[mf['p_name'] == "Noble Bliss"])
+    kf = (mf.loc[mf['p_name'] == "Butler Ridge"])
     wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
     
     # Set wind farm to N_row x N_row grid with constant spacing 
