@@ -65,11 +65,11 @@ if __name__ == '__main__':
         
     # Set wind farm to N_row x t_row grid with constant spacing 
     if scale_ws_avg:
-        kf= "Rel_spc="+ str(rel_spc) +"_D=" + str(D) + '_avg_ws=' +str(des_avg_ws)\
-        + '_SP=' + str(SP) + "_TI=" + str(TI)
+        kf= "Rel_spc="+ str(rel_spc) +"_D=" + str(D) + '_avg_ws=' +str(des_avg_ws)+ \
+        '_SP=' + str(SP) + "_TI=" + str(TI)
     else: 
         kf= "Rel_spc="+ str(rel_spc) +"_D=" + str(D) + \
-        + '_SP=' + str(SP) + "_TI=" + str(TI)
+        '_SP=' + str(SP) + "_TI=" + str(TI)
     
     #Rated Power
     P_r = SP * ((D**2)/4) * 10**-3 * math.pi
