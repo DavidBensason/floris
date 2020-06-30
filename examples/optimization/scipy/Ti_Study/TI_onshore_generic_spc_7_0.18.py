@@ -69,7 +69,7 @@ if __name__ == '__main__':
         + '_SP=' + str(SP) + "_TI=" + str(TI)
     else: 
         kf= "Rel_spc="+ str(rel_spc) +"_D=" + str(D) + \
-        + '_SP=' + str(SP) + "_TI=" + str(TI)
+        '_SP=' + str(SP) + "_TI=" + str(TI)
     
     #Rated Power
     P_r = SP * ((D**2)/4) * 10**-3 * math.pi
