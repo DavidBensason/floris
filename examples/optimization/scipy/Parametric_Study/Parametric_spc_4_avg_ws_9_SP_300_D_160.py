@@ -38,7 +38,7 @@ if __name__ == '__main__':
     os.path.join(file_dir, '../../../example_input.json')
     )
     
-    opt_options = {'maxiter': 100, 'disp': False,'iprint': 1, 'ftol': 1e-7, 'eps': 0.01}
+    opt_options = {'maxiter': 20, 'disp': False,'iprint': 1, 'ftol': 1e-6, 'eps': 0.01}
 
     data = pd.DataFrame([])
     # Define wind farm coordinates and layout
@@ -59,19 +59,19 @@ if __name__ == '__main__':
     # CONSTANTS 
     scale_ws_avg = True
     if scale_ws_avg:
-        des_avg_ws = 8.5
+        des_avg_ws = 9.0
     
-    rel_spc = 7
+    rel_spc = 4
     
     D = 160
-    SP = 250
+    SP = 300
   
     # Set wind farm to N_row x t_row grid with constant spacing 
     if scale_ws_avg:
         kf= "Rel_spc="+ str(rel_spc) +"_D=" + str(D) + '_avg_ws=' +str(des_avg_ws)\
         + '_SP=' + str(SP)
     else: 
-        kf= "Rel_spc="+ str(rel_spc) +"_D=" + str(D) + \
+        kf= "Rel_spc="+ str(rel_spc) +"_D=" + str(D) \
         + '_SP=' + str(SP)
 
     #Rated Power
@@ -454,10 +454,10 @@ if __name__ == '__main__':
         df_opt = yaw_opt.optimize()
         
         ## Save df_base and df_opt to pickle file 
-        df_base_pickle = "Df_base_" + str(kf['p_name'].iloc[0]) + "_without_unc"
+        df_base_pickle = "Df_base_" + str(kf) + "_without_unc"
         df_base.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_base_pickle/{}'.format(df_base_pickle))
         
-        df_opt_pickle = "Df_opt_" + str(kf['p_name'].iloc[0]) + "_without_unc"
+        df_opt_pickle = "Df_opt_" + str(kf) + "_without_unc"
         df_opt.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_opt_pickle/{}'.format(df_opt_pickle))
         
         
@@ -470,6 +470,7 @@ if __name__ == '__main__':
         	df,
         	df_base['power_no_wake'],
         	df_base['power_baseline'],
+            df_opt['power_opt']
         )
         
         fig, axarr = plt.subplots(3, 1, sharex=True, figsize=(6.4, 6.5))
@@ -484,20 +485,23 @@ if __name__ == '__main__':
     
         #Save final data as a pickle 
         if scale_ws_avg:
-            data = data.append(pd.DataFrame({'Farm Name': str(kf),'Rated Power': P_r, 'Specific Power':SP, '#Turbine': int(Num_Turb),'Turbine_D':int(D),
-                                             'Avg_ws': float(des_avg_ws),
-                                             'Turb_spc_rel': float(rel_spc),'Farm_lat':wf_coordinate[0], 'Farm_lon': wf_coordinate[1], 
-                                             'AEP_No_Wake': power_rose.total_no_wake, 
-                                             'AEP_Baseline': power_rose.total_baseline,'%_Baseline': 100.* power_rose.baseline_percent, 
-                                             'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss}, 
-                                             index=[0]), ignore_index=True)
+            data = data.append(pd.DataFrame({'Farm Name': str(kf), 'Rated_Power': P_r, 'Specific_Power':SP,'#Turbine': int(Num_Turb), 'Turbine_D':int(D),
+                                                 'Turb_spc_rel': float(rel_spc),'Avg_ws': float(des_avg_ws),'AEP_No_Wake': power_rose.total_no_wake, 
+                                                 'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
+                                                 '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
+                                                 'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
+                                                 'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
+                                                 index=[0]), ignore_index=True)
         else: 
-            data = data.append(pd.DataFrame({'Farm Name': str(kf),'Rated Power': P_r, 'Specific Power':SP, '#Turbine': int(Num_Turb),'Turbine_D':int(D),
-                                             'Turb_spc_rel': float(rel_spc),'Farm_lat':wf_coordinate[0], 'Farm_lon': wf_coordinate[1], 
-                                             'AEP_No_Wake': power_rose.total_no_wake, 
-                                             'AEP_Baseline': power_rose.total_baseline,'%_Baseline': 100.* power_rose.baseline_percent, 
-                                             'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss}, 
-                                             index=[0]), ignore_index=True)
+                    
+            data = data.append(pd.DataFrame({'Farm Name': str(kf), 'Rated_Power': P_r, 'Specific_Power':SP,'#Turbine': int(Num_Turb), 'Turbine_D':int(D),
+                                                 'Turb_spc_rel': float(rel_spc),'AEP_No_Wake': power_rose.total_no_wake, 
+                                                 'AEP_Baseline': power_rose.total_baseline, 'AEP_Opt':power_rose.total_opt, 
+                                                 '%_Baseline': 100.* power_rose.baseline_percent, '%_Opt': 100.* power_rose.opt_percent, 
+                                                 'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
+                                                 'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
+                                                 index=[0]), ignore_index=True)
+
         table_pickle = "Pickle_table_" + str(kf) + "_without_unc"
         data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/tabular_data_pickle/{}'.format(table_pickle))
         

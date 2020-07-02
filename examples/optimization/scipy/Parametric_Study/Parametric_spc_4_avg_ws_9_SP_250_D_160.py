@@ -59,12 +59,12 @@ if __name__ == '__main__':
     # CONSTANTS 
     scale_ws_avg = True
     if scale_ws_avg:
-        des_avg_ws = 7.5
+        des_avg_ws = 9.0
     
     rel_spc = 4
     
     D = 160
-    SP = 150
+    SP = 250
   
     # Set wind farm to N_row x t_row grid with constant spacing 
     if scale_ws_avg:
