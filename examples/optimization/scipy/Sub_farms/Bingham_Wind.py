@@ -93,7 +93,7 @@ if __name__ == '__main__':
     N_turb = len(layout_x)
     
     fi.reinitialize_flow_field(layout_array=(layout_x, layout_y), wind_direction=[270.0],wind_speed=[8.0])
-    fi.reinitialize_flow_field(turbulence_intensity=[0.06]) ### Set turbuelence intensity here 
+    fi.reinitialize_flow_field(turbulence_intensity=[0.10]) ### Set turbuelence intensity here 
     fi.calculate_wake()
     opt_options = {'maxiter': 20, 'disp': False,'iprint': 1, 'ftol': 1e-6, 'eps': 0.01}
 
@@ -462,11 +462,11 @@ if __name__ == '__main__':
         df_opt = yaw_opt.optimize()
         
         ## Save df_base and df_opt to pickle file 
-        df_base_pickle = "Df_base_" + str(kf['p_name'].iloc[0]) + "_without_unc_TI_6"
-        df_base.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Base_pickle_6/{}'.format(df_base_pickle))
+        df_base_pickle = "Df_base_" + str(kf['p_name'].iloc[0]) + "_without_unc_TI_10"
+        df_base.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Base_pickle_10/{}'.format(df_base_pickle))
         
-        df_opt_pickle = "Df_opt_" + str(kf['p_name'].iloc[0]) + "_without_unc_TI_6"
-        df_opt.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Opt_pickle_6/{}'.format(df_opt_pickle))
+        df_opt_pickle = "Df_opt_" + str(kf['p_name'].iloc[0]) + "_without_unc_TI_10"
+        df_opt.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Opt_pickle_10/{}'.format(df_opt_pickle))
         
                
         # Summarize using the power rose module
@@ -486,8 +486,8 @@ if __name__ == '__main__':
         power_rose.report()
         
         # Save farm report with designated name and path (this case  HPC)
-        report_farm_without_unc = str(kf['p_name'].iloc[0]) + "_report_without_unc_TI_6.png"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/farm_report_6/{}'.format(report_farm_without_unc))
+        report_farm_without_unc = str(kf['p_name'].iloc[0]) + "_report_without_unc_TI_10.png"
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/farm_report_10/{}'.format(report_farm_without_unc))
         plt.show()
         
         #Save final data as a pickle 
@@ -497,8 +497,8 @@ if __name__ == '__main__':
                                          'Wk_Loss_Baseline':100.* power_rose.baseline_wake_loss, 'Wk_Loss_Opt': 100.* power_rose.opt_wake_loss, 
                                          'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                          index=[0]), ignore_index=True)
-        table_pickle = "Pickle_table_farms_Group_" + str(kf['p_name'].iloc[0]) + "_without_unc_TI_6"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/tabular_data_pickle_6/{}'.format(table_pickle))
+        table_pickle = "Pickle_table_farms_Group_" + str(kf['p_name'].iloc[0]) + "_without_unc_TI_10"
+        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/tabular_data_pickle_10/{}'.format(table_pickle))
         
         # Save final data as an image 
         tabular = (data.loc[data['Farm Name'] == kf['p_name'].iloc[0]])
@@ -514,8 +514,8 @@ if __name__ == '__main__':
         # Render Table using above function 
         fig, ax = render_mpl_table(table_new)
         
-        table_image = "Table_Image_" + str(kf['p_name'].iloc[0])+ "_without_unc_TI_6"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/tabular_data_image_6/{}.png'.format(table_image))
+        table_image = "Table_Image_" + str(kf['p_name'].iloc[0])+ "_without_unc_TI_10"
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/tabular_data_image_10/{}.png'.format(table_image))
     
     
     else: 
