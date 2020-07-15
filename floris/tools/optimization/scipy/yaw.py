@@ -21,7 +21,9 @@ from .optimization import Optimization
 
 class YawOptimization(Optimization):
     """
-    YawOptimization is a subclass of :py:class:`floris.tools.optimization.scipy.Optimization` that is used to optimize the yaw angles of all turbines in a Floris Farm for a single set of inflow conditions using the SciPy optimize package.
+    YawOptimization is a subclass of :py:class:`floris.tools.optimization.scipy.
+    Optimization` that is used to optimize the yaw angles of all turbines in a Floris
+    Farm for a single set of inflow conditions using the SciPy optimize package.
     """
 
     def __init__(
@@ -40,7 +42,6 @@ class YawOptimization(Optimization):
         """
         Instantiate YawOptimization object with a FlorisInterface object
         and assign parameter values.
-
         Args:
             fi (:py:class:`~.tools.floris_interface.FlorisInterface`):
                 Interface used to interact with the Floris object.
@@ -73,7 +74,6 @@ class YawOptimization(Optimization):
                 wind direction and yaw position deviations when wind direction
                 and/or yaw position uncertainty is included in the power
                 calculations. Contains the following key-value pairs:
-
                 -   **wd_unc** (*np.array*): The wind direction
                     deviations from the intended wind direction (deg).
                 -   **wd_unc_pmf** (*np.array*): The probability
@@ -82,7 +82,6 @@ class YawOptimization(Optimization):
                     from the intended yaw angles (deg).
                 -   **yaw_unc_pmf** (*np.array*): The probability
                     of each yaw angle deviation in **yaw_unc** occuring.
-
                 If none are specified, default PMFs are calculated using
                 values provided in **unc_options**. Defaults to None.
             unc_options (dictionary, optional): A dictionary containing values
@@ -91,7 +90,6 @@ class YawOptimization(Optimization):
                 position deviations when wind direction and/or yaw position
                 uncertainty is included. This argument is only used when
                 **unc_pmfs** is None and contains the following key-value pairs:
-
                 -   **std_wd** (*float*): The standard deviation of
                     the wind direction deviations from the original wind
                     direction (deg).
@@ -102,7 +100,6 @@ class YawOptimization(Optimization):
                 -   **pdf_cutoff** (*float*): The cumulative
                     distribution function value at which the tails of the
                     PMFs are truncated.
-
                 If none are specified, default values of
                 {'std_wd': 4.95, 'std_yaw': 1.75, 'pmf_res': 1.0,
                 'pdf_cutoff': 0.995} are used. Defaults to None.
@@ -111,12 +108,11 @@ class YawOptimization(Optimization):
 
         if opt_options is None:
             self.opt_options = {
-                "maxiter": 100,
-                "disp": False,
-                "iprint": 1,
-                "ftol": 1e-7,
-                "eps": 0.01,
-            }
+                'maxiter': 100,
+                'disp': True,
+                'iprint': 2,
+                'ftol': 1e-5
+            } #, 'eps': 0.01}
 
         self.unc_pmfs = unc_pmfs
 
@@ -143,31 +139,39 @@ class YawOptimization(Optimization):
     # Private methods
 
     def _yaw_power_opt(self, yaw_angles):
+        yaw_angles = self._unnorm(
+            np.array(yaw_angles),
+            self.minimum_yaw_angle,
+            self.maximum_yaw_angle
+        )
         return -1 * self.fi.get_farm_power_for_yaw_angle(
             yaw_angles,
             include_unc=self.include_unc,
             unc_pmfs=self.unc_pmfs,
-            unc_options=self.unc_options,
-        )
+            unc_options=self.unc_options
+        )/self.initial_farm_power
 
     def _optimize(self):
         """
         Find optimum setting of turbine yaw angles for power production
         given fixed atmospheric conditins (wind speed, direction, etc.).
-
         Returns:
             opt_yaw_angles (np.array): optimal yaw angles of each turbine.
         """
 
         self.residual_plant = minimize(
             self._yaw_power_opt,
-            self.x0,
+            self.x0_norm,
             method=self.opt_method,
-            bounds=self.bnds,
-            options=self.opt_options,
+            bounds=self.bnds_norm,
+            options=self.opt_options
         )
 
-        opt_yaw_angles = self.residual_plant.x
+        opt_yaw_angles = self._unnorm(
+            self.residual_plant.x,
+            self.minimum_yaw_angle,
+            self.maximum_yaw_angle
+        )
 
         return opt_yaw_angles
 
@@ -181,7 +185,6 @@ class YawOptimization(Optimization):
         This method solves for the optimum turbine yaw angles for power
         production given a fixed set of atmospheric conditions
         (wind speed, direction, etc.).
-
         Returns:
             np.array: Optimal yaw angles for each turbine (deg).
         """
@@ -215,7 +218,6 @@ class YawOptimization(Optimization):
         """
         This method reinitializes any optimization parameters that are
         specified. Otherwise, the current parameter values are kept.
-
         Args:
             minimum_yaw_angle (float, optional): Minimum constraint on yaw
                 angle (deg). Defaults to None.
@@ -244,7 +246,6 @@ class YawOptimization(Optimization):
                 wind direction and yaw position deviations when wind direction
                 and/or yaw position uncertainty is included in the power
                 calculations. Contains the following key-value pairs:
-
                 -   **wd_unc** (*np.array*): The wind direction
                     deviations from the intended wind direction (deg).
                 -   **wd_unc_pmf** (*np.array*): The probability
@@ -253,7 +254,6 @@ class YawOptimization(Optimization):
                     from the intended yaw angles (deg).
                 -   **yaw_unc_pmf** (*np.array*): The probability
                     of each yaw angle deviation in **yaw_unc** occuring.
-
                 If none are specified, default PMFs are calculated using
                 values provided in **unc_options**. Defaults to None.
             unc_options (dictionary, optional): A dictionary containing values
@@ -262,7 +262,6 @@ class YawOptimization(Optimization):
                 position deviations when wind direction and/or yaw position
                 uncertainty is included. This argument is only used when
                 **unc_pmfs** is None and contains the following key-value pairs:
-
                 -   **std_wd** (*float*): The standard deviation of
                     the wind direction deviations from the original wind
                     direction (deg).
@@ -273,7 +272,6 @@ class YawOptimization(Optimization):
                 -   **pdf_cutoff** (*float*): The cumulative
                     distribution function value at which the tails of the
                     PMFs are truncated.
-
                 If none are specified, default values of
                 {'std_wd': 4.95, 'std_yaw': 1.75, 'pmf_res': 1.0,
                 'pdf_cutoff': 0.995} are used. Defaults to None.
@@ -285,14 +283,19 @@ class YawOptimization(Optimization):
         if x0 is not None:
             self.x0 = x0
         else:
-            self.x0 = [
-                turbine.yaw_angle
-                for turbine in self.fi.floris.farm.turbine_map.turbines
-            ]
+            self.x0 = [turbine.yaw_angle for turbine in \
+                       self.fi.floris.farm.turbine_map.turbines]
+        self.x0_norm = self._norm(
+            np.array(self.x0),
+            self.minimum_yaw_angle,
+            self.maximum_yaw_angle
+        )
         if bnds is not None:
             self.bnds = bnds
         else:
-            self._set_opt_bounds(self.minimum_yaw_angle, self.maximum_yaw_angle)
+            self._set_opt_bounds(self.minimum_yaw_angle, 
+                                 self.maximum_yaw_angle)
+        self.bnds_norm = [(0.0, 1.0) for _ in range(self.nturbs)]
         if opt_method is not None:
             self.opt_method = opt_method
         if opt_options is not None:
@@ -365,6 +368,13 @@ class YawOptimization(Optimization):
                 "yaw_unc_pmf": yaw_unc_pmf,
             }
 
+        self.initial_farm_power = self.fi.get_farm_power_for_yaw_angle(
+            [0.0]*self.nturbs,
+            include_unc=include_unc,
+            unc_pmfs=unc_pmfs,
+            unc_options=unc_options
+        )
+
     # Properties
 
     @property
@@ -372,12 +382,9 @@ class YawOptimization(Optimization):
         """
         The minimum yaw angle for the optimization. The setting-method
         updates the optimization bounds accordingly.
-
         **Note**: This is a virtual property used to "get" or "set" a value.
-
         Args:
             value (float): The minimum yaw angle to set (deg).
-
         Returns:
             float: The minimum yaw angle currently set (deg).
         """
@@ -396,12 +403,9 @@ class YawOptimization(Optimization):
         """
         The maximum yaw angle for the optimization. The setting-method
         updates the optimization bounds accordingly.
-
         **Note**: This is a virtual property used to "get" or "set" a value.
-
         Args:
             value (float): The maximum yaw angle to set (deg).
-
         Returns:
             float: The maximum yaw angle currently set (deg).
         """
@@ -419,12 +423,9 @@ class YawOptimization(Optimization):
     def x0(self):
         """
         The initial yaw angles used for the optimization.
-
         **Note**: This is a virtual property used to "get" or "set" a value.
-
         Args:
             value (iterable): The yaw angle initial conditions to set (deg).
-
         Returns:
             list: The yaw angle initial conditions currently set (deg).
         """
