@@ -214,7 +214,7 @@ if __name__ == '__main__':
     #2) Just_Unc : Run for just robost 
     #3) Just_Base : Run for just non-robust
     
-    Optimization_case= "Just_Base"
+    Optimization_case= "Just_Unc"
     
     if Optimization_case == "Unc_and_base":
     
