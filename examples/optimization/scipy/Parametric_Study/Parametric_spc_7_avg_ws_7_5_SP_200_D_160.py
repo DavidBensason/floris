@@ -418,7 +418,7 @@ if __name__ == '__main__':
                                          'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                          index=[0]), ignore_index=True)
         table_pickle = "Pickle_table_" + str(kf) + "_with_unc"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/tabular_data_pickle_unc/{}'.format(table_pickle))
+        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/tabular_data_pickle_unc/{}'.format(table_pickle))
         
     elif Optimization_case == "Just_Base":
         
