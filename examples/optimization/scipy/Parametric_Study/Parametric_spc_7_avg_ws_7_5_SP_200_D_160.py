@@ -178,9 +178,9 @@ if __name__ == '__main__':
     else:
         #file_name = str(zf) + "_Wind_Farm.p"
         # Load file without the TI 
-        df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/Onshore_case_Ohio_z_L_scale.p')
+        df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/Onshore_case_Ohio.p')
     
-    """   
+    
     if scale_ws_avg: 
         ws_list = np.arange(0,26,1)
        # ws_list = np.arange(0,26,1)
@@ -199,7 +199,7 @@ if __name__ == '__main__':
         
         # Change the df ws column to match the des average 
         df['ws'] = df['ws'].apply(lambda x: x*scale_fac)
-    """    
+      
     # plot wind rose
     #wind_rose.plot_wind_rose()
     #windrose_name = str(zf) + "_Wind_rose.png"
@@ -214,7 +214,7 @@ if __name__ == '__main__':
     #2) Just_Unc : Run for just robost 
     #3) Just_Base : Run for just non-robust
     
-    Optimization_case= "Just_Base"
+    Optimization_case= "Just_Unc"
     
     if Optimization_case == "Unc_and_base":
     
