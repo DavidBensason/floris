@@ -178,9 +178,9 @@ if __name__ == '__main__':
     else:
         #file_name = str(zf) + "_Wind_Farm.p"
         # Load file without the TI 
-        df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/Onshore_case_Ohio.p')
+        df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/Onshore_case_Ohio_z_L_scale.p')
     
-     
+    """ 
     if scale_ws_avg: 
         ws_list = np.arange(0,26,1)
        # ws_list = np.arange(0,26,1)
@@ -207,7 +207,7 @@ if __name__ == '__main__':
                                                      index=[0]), ignore_index=True)
     
     df['ti'] = fitted_curve['interp']
-
+    """
     # plot wind rose
     #wind_rose.plot_wind_rose()
     #windrose_name = str(zf) + "_Wind_rose.png"
@@ -462,11 +462,11 @@ if __name__ == '__main__':
         df_opt = yaw_opt.optimize()
         
         ## Save df_base and df_opt to pickle file 
-        df_base_pickle = "Df_base_" + str(kf) + "_without_unc_ws"
-        df_base.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_base_pickle_ws/{}'.format(df_base_pickle))
+        df_base_pickle = "Df_base_" + str(kf) + "_without_unc_zL"
+        df_base.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_base_pickle_zL/{}'.format(df_base_pickle))
         
-        df_opt_pickle = "Df_opt_" + str(kf) + "_without_unc_ws"
-        df_opt.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_opt_pickle_ws/{}'.format(df_opt_pickle))
+        df_opt_pickle = "Df_opt_" + str(kf) + "_without_unc_zL"
+        df_opt.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_opt_pickle_zL/{}'.format(df_opt_pickle))
         
         
         # Summarize using the power rose module
@@ -486,8 +486,8 @@ if __name__ == '__main__':
         power_rose.report()
     
         # Save farm report with designated name and path (this case  HPC)
-        report_farm_without_unc = str(kf) +"_report_without_unc_ws.png"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/farm_report_ws/{}'.format(report_farm_without_unc))
+        report_farm_without_unc = str(kf) +"_report_without_unc_zL.png"
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/farm_report_zL/{}'.format(report_farm_without_unc))
         
         #plt.show()
     
@@ -510,8 +510,8 @@ if __name__ == '__main__':
                                                  'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                                  index=[0]), ignore_index=True)
 
-        table_pickle = "Pickle_table_" + str(kf) + "_without_unc_ws"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/tabular_data_pickle_ti_ws/{}'.format(table_pickle))
+        table_pickle = "Pickle_table_" + str(kf) + "_without_unc_zL"
+        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/tabular_data_pickle_ti_zL/{}'.format(table_pickle))
         
         # Save final data as an image 
         #tabular = (data.loc[data['Turbine_D'] == D])
