@@ -180,6 +180,7 @@ if __name__ == '__main__':
         # Load file without the TI 
         df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/Onshore_case_Ohio_z_L_scale.p')
     
+    df = df.round({'ti': 3})
     """ 
     if scale_ws_avg: 
         ws_list = np.arange(0,26,1)
