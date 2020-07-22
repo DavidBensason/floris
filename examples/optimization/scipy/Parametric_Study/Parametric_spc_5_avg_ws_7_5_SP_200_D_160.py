@@ -59,9 +59,9 @@ if __name__ == '__main__':
     # CONSTANTS 
     scale_ws_avg = True
     if scale_ws_avg:
-        des_avg_ws = 9.0
+        des_avg_ws = 7.5
     
-    rel_spc = 4
+    rel_spc = 5
     
     D = 160
     SP = 200
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     
     
     
-    fi.reinitialize_flow_field(layout_array=(layout_x, layout_y),wind_direction=[210.0],wind_speed=[8.0])
+    fi.reinitialize_flow_field(layout_array=(layout_x, layout_y),wind_direction=[270.0],wind_speed=[8.0])
     fi.calculate_wake()
     fi.reinitialize_flow_field(turbulence_intensity=[0.08])
     # Using the NREL 5MW reference turbine     
@@ -525,6 +525,8 @@ if __name__ == '__main__':
     
     else: 
         raise SystemExit("None Valid Optimization Method Chosen")
+
+
 
 
 

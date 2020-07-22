@@ -61,10 +61,10 @@ if __name__ == '__main__':
     if scale_ws_avg:
         des_avg_ws = 9.0
     
-    rel_spc = 4
+    rel_spc = 6
     
     D = 160
-    SP = 200
+    SP =150
   
     # Set wind farm to N_row x t_row grid with constant spacing 
     if scale_ws_avg:
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     
     
     
-    fi.reinitialize_flow_field(layout_array=(layout_x, layout_y),wind_direction=[210.0],wind_speed=[8.0])
+    fi.reinitialize_flow_field(layout_array=(layout_x, layout_y),wind_direction=[270.0],wind_speed=[8.0])
     fi.calculate_wake()
     fi.reinitialize_flow_field(turbulence_intensity=[0.08])
     # Using the NREL 5MW reference turbine     
