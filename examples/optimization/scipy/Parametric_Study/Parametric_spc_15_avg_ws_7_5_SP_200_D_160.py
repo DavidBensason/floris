@@ -108,7 +108,7 @@ if __name__ == '__main__':
     
     fi.reinitialize_flow_field(layout_array=(layout_x, layout_y),wind_direction=[270.0],wind_speed=[8.0])
     fi.calculate_wake()
-    fi.reinitialize_flow_field(turbulence_intensity=[0.08])
+    #fi.reinitialize_flow_field(turbulence_intensity=[0.08])
     # Using the NREL 5MW reference turbine     
     C_p_rated = 0.43003137
     C_t_rated = 0.70701647
@@ -178,9 +178,9 @@ if __name__ == '__main__':
     else:
         #file_name = str(zf) + "_Wind_Farm.p"
         # Load file without the TI 
-        df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/Onshore_case_Ohio.p')
+        df = wind_rose.load(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle/Onshore_case_Ohio_z_L_scale.p')
     
-       
+    """   
     if scale_ws_avg: 
         ws_list = np.arange(0,26,1)
        # ws_list = np.arange(0,26,1)
@@ -199,7 +199,7 @@ if __name__ == '__main__':
         
         # Change the df ws column to match the des average 
         df['ws'] = df['ws'].apply(lambda x: x*scale_fac)
-        
+    """    
     # plot wind rose
     #wind_rose.plot_wind_rose()
     #windrose_name = str(zf) + "_Wind_rose.png"
@@ -214,7 +214,7 @@ if __name__ == '__main__':
     #2) Just_Unc : Run for just robost 
     #3) Just_Base : Run for just non-robust
     
-    Optimization_case= "Just_Unc"
+    Optimization_case= "Just_Base"
     
     if Optimization_case == "Unc_and_base":
     
@@ -431,11 +431,11 @@ if __name__ == '__main__':
         table_pickle = "Pickle_table_" + str(kf) + "_with_unc"
         data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/tabular_data_pickle_unc/{}'.format(table_pickle))
       
-    
+        
     elif Optimization_case == "Just_Base":
         
         # Instantiate the Optimization object FOR NOW ASSUME TI WORKS
-        yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws,
+        yaw_opt = YawOptimizationWindRoseParallel(fi, df.wd, df.ws,df.ti,
                                        minimum_yaw_angle=min_yaw, 
                                        maximum_yaw_angle=max_yaw,
                                        minimum_ws=minimum_ws,
@@ -448,11 +448,11 @@ if __name__ == '__main__':
         df_opt = yaw_opt.optimize()
         
         ## Save df_base and df_opt to pickle file 
-        df_base_pickle = "Df_base_" + str(kf) + "_without_unc"
-        df_base.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_base_pickle/{}'.format(df_base_pickle))
+        df_base_pickle = "Df_base_" + str(kf) + "_without_zL"
+        df_base.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_base_pickle_zL/{}'.format(df_base_pickle))
         
-        df_opt_pickle = "Df_opt_" + str(kf) + "_without_unc"
-        df_opt.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_opt_pickle/{}'.format(df_opt_pickle))
+        df_opt_pickle = "Df_opt_" + str(kf) + "_without_zL"
+        df_opt.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/df_opt_pickle_zL/{}'.format(df_opt_pickle))
         
         
         # Summarize using the power rose module
@@ -472,8 +472,8 @@ if __name__ == '__main__':
         power_rose.report()
     
         # Save farm report with designated name and path (this case  HPC)
-        report_farm_without_unc = str(kf) +"_report_without_unc.png"
-        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/farm_report/{}'.format(report_farm_without_unc))
+        report_farm_without_unc = str(kf) +"_report_without_unc_zL.png"
+        plt.savefig(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/farm_report_zL/{}'.format(report_farm_without_unc))
         
         #plt.show()
     
@@ -496,8 +496,8 @@ if __name__ == '__main__':
                                                  'AEP_Gain_Opt': 100.* power_rose.percent_gain , 'Loss_Red_Opt':100.* power_rose.reduction_in_wake_loss}, 
                                                  index=[0]), ignore_index=True)
 
-        table_pickle = "Pickle_table_" + str(kf) + "_without_unc"
-        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/tabular_data_pickle/{}'.format(table_pickle))
+        table_pickle = "Pickle_table_" + str(kf) + "_without_unc_zL"
+        data.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Parametric_Study/tabular_data_pickle_ti_zL/{}'.format(table_pickle))
         
         # Save final data as an image 
         #tabular = (data.loc[data['Turbine_D'] == D])
@@ -519,7 +519,6 @@ if __name__ == '__main__':
     
     else: 
         raise SystemExit("None Valid Optimization Method Chosen")
-
 
 
 
