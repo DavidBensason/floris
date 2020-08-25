@@ -103,8 +103,8 @@ for farm in farm_list:
                                                 'freq':freq}, 
                                                 index=[0]), ignore_index=True)
             
-            yaw_pickle = "Yaw_dist_8_without_unc"
-            total_fraction_farm.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/yaw_dist_test/{}'.format(yaw_pickle))
+yaw_pickle = "Yaw_dist_8_without_unc"
+total_fraction_farm.to_pickle(r'/home/dbensaso/code/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/yaw_dist_test/{}'.format(yaw_pickle))
         
             #total_turbine_yaw_freq = sum(freq_yaw) * 100
             #fraction = fraction.append(pd.DataFrame({'Farm Name': farm,
