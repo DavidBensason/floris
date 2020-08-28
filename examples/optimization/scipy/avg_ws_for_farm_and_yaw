@@ -1,0 +1,417 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jul  7 08:57:53 2020
+
+@author: dbensaso
+"""
+from itertools import combinations 
+import matplotlib.pyplot as plt
+import floris.tools as wfct
+import floris.tools.visualization as vis
+import floris.tools.cut_plane as cp
+from floris.tools.optimization.scipy.yaw_wind_rose import YawOptimizationWindRose
+import floris.tools.wind_rose as rose
+import floris.tools.power_rose as pr
+import numpy as np
+import pandas as pd
+import WakeSteering_US.WakeSteering_US.namingfarm as nf
+import WakeSteering_US.WakeSteering_US.cp_for_any_turb as cturb
+import pdb
+import os
+import time
+import six
+import math
+import itertools
+
+
+
+
+wind_rose = rose.WindRose()
+farm_avg_ws = pd.DataFrame([])
+
+##1) Average wind speed for each farm 
+"""
+tf= pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/TI_8_farm_results')
+farm_list = tf['Farm Name']
+for farm in farm_list:
+    kf = farm
+    file_name = str(kf) + "_Wind_Farm.p"
+    df = wind_rose.load(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle_subset_no_ti/{}'.format(file_name))
+    
+    ws_list = np.arange(0,26,1)
+       # ws_list = np.arange(0,26,1)
+    data_overall = pd.DataFrame([])
+    for iii in ws_list: 
+        dw = df.loc[df['ws'] == iii]
+        freq_sum = dw['freq_val'].sum()
+        product = iii * freq_sum
+        data_overall = data_overall.append({'ws': iii, 'freq': freq_sum, 'product': product}, ignore_index=True)
+    
+    # Average ws in the farm 
+    avg_ws = data_overall['product'].sum() / data_overall['freq'].sum()
+    
+    farm_avg_ws = farm_avg_ws.append(pd.DataFrame({'Farm': farm,'avg_ws': avg_ws}, 
+                                                     index=[0]), ignore_index=True)
+
+
+
+"""
+
+### Finding the specific power of the turbine in each farm
+"""
+
+farm_SP = pd.DataFrame([])
+for farm in farm_list:   
+    mf =pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
+        
+    kf = (mf.loc[mf['p_name'] == farm])
+    
+    # Set wind farm to N_row x N_row grid with constant spacing 
+    # (2 x 2 grid, 5 D spacing)
+    D = kf["t_rd"].mean()
+    P_r = kf["t_cap"].mean()
+    
+    SP = (P_r *(10**3)) / ((math.pi * D**2) /4)
+    
+    farm_SP = farm_SP.append(pd.DataFrame({'Farm': farm,'SP': SP}, 
+                                                     index=[0]), ignore_index=True)
+"""
+### Look at the average yaw offsets for each farm, and collect the totals for each region_ this is for 8
+
+"""    
+total_every_farm = pd.DataFrame([])    
+
+for farm in farm_list:
+    ### First for every farm s
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+    fi = wfct.floris_interface.FlorisInterface(
+        os.path.join(file_dir, '../../example_input.json')
+    )
+    
+    #df_base =pd.read_pickle('/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Base_pickle/Df_base_Bear Creek_without_unc')
+    
+    mf =pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
+        
+    kf = (mf.loc[mf['p_name'] == farm])
+    wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
+    
+    df_opt_pickle = "Df_opt_" + str(kf['p_name'].iloc[0]) + "_without_unc"
+    df_opt = pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Opt_pickle/{}'.format(df_opt_pickle))
+    # Set wind farm to N_row x N_row grid with constant spacing 
+    # (2 x 2 grid, 5 D spacing)
+    D = fi.floris.farm.turbines[0].rotor_diameter
+    lat_y = kf['ylat'].values
+    long_x = kf['xlong'].values
+    
+    layout_x, layout_y= nf.longlat_to_utm(lat_y, long_x)
+    #layout_x=layout_x1.tolist()
+    #layout_y=layout_y1.tolist()
+    
+    file_name = str(kf['p_name'].iloc[0]) + "_Wind_Farm.p"
+    df = wind_rose.load(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle_subset_no_ti/{}'.format(file_name))
+        
+    
+    N_turb = len(layout_x)
+    
+    fi.reinitialize_flow_field(layout_array=(layout_x, layout_y), wind_direction=[270.0],wind_speed=[8.0])
+    fi.reinitialize_flow_field(turbulence_intensity=[0.08]) ### Set turbuelence intensity here 
+    fi.calculate_wake()
+    #Diameter and Rated power based on the wind farm
+    D = kf["t_rd"]
+    P_r = kf["t_cap"]
+    hub_h = kf["t_hh"]
+    
+    C_p_rated = 0.43003137
+    C_t_rated = 0.70701647
+    
+    #Normalized wind speed for any turbine
+    tf= pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/NREL_5MW_reference')
+    
+    ## Enumerate so for each turbine 
+    for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
+            turbine.rotor_diameter = D.iloc[count]
+            turbine.hub_height = hub_h.iloc[count]
+            T_Area = (np.pi* (D.iloc[count]**2)) /4
+            U_turb_rated= (2* P_r.iloc[count]*(10**3)/ (C_p_rated * 1.225* T_Area))**(1/3)
+            U_turb_norm =  tf.iloc[:,0] / U_turb_rated
+            cp_new = cturb.cp_for_any_turb(U_turb_norm,U_turb_rated,T_Area,P_r.iloc[count],tf)
+            ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
+            turbine.power_thrust_table["power"] = cp_new
+            turbine.power_thrust_table["thrust"] = ct_new
+            turbine.change_turbine_parameters({})
+    for count, coord in enumerate(fi.floris.farm.flow_field.turbine_map.coords):
+        coord.x3 = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    fi.floris.farm.flow_field.specified_wind_height = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    
+    
+    overall_second_case = pd.DataFrame([])
+    for turb in range(len(fi.floris.farm.flow_field.turbine_map.turbines)):
+        turbine_id = fi.floris.farm.flow_field.turbine_map.turbines[turb]
+        turbine_val = []
+        for i in range(len(df_opt['wd'])):
+            turbine_yaw = df_opt['yaw_angles'][i][turb]
+            freq = df['freq_val'][i]
+            product = abs(turbine_yaw * freq)
+            turbine_val.append(product)
+        
+        total_for_turbine = sum(turbine_val)
+        overall_second_case = overall_second_case.append(pd.DataFrame({'Farm Name': farm,
+                                                                       'weighted_yaw': total_for_turbine}, 
+                                                         index=[0]), ignore_index=True)
+    total_every_farm = total_every_farm.append(overall_second_case,ignore_index=True)
+       
+### Need to find average yaw for each farm as well
+average_every_farm = pd.DataFrame([])    
+overall_second_case = pd.DataFrame([])
+every_turbine_case= pd.DataFrame([])
+for farm in farm_list:
+    ### First for every farm s
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+    fi = wfct.floris_interface.FlorisInterface(
+        os.path.join(file_dir, '../../example_input.json')
+    )
+    
+    #df_base =pd.read_pickle('/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Base_pickle/Df_base_Bear Creek_without_unc')
+    
+    mf =pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
+        
+    kf = (mf.loc[mf['p_name'] == farm])
+    wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
+    
+    df_opt_pickle = "Df_opt_" + str(kf['p_name'].iloc[0]) + "_without_unc"
+    df_opt = pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Opt_pickle/{}'.format(df_opt_pickle))
+    # Set wind farm to N_row x N_row grid with constant spacing 
+    # (2 x 2 grid, 5 D spacing)
+    D = fi.floris.farm.turbines[0].rotor_diameter
+    lat_y = kf['ylat'].values
+    long_x = kf['xlong'].values
+    
+    layout_x, layout_y= nf.longlat_to_utm(lat_y, long_x)
+    #layout_x=layout_x1.tolist()
+    #layout_y=layout_y1.tolist()
+    
+    file_name = str(kf['p_name'].iloc[0]) + "_Wind_Farm.p"
+    df = wind_rose.load(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle_subset_no_ti/{}'.format(file_name))
+        
+    
+    N_turb = len(layout_x)
+    
+    fi.reinitialize_flow_field(layout_array=(layout_x, layout_y), wind_direction=[270.0],wind_speed=[8.0])
+    fi.reinitialize_flow_field(turbulence_intensity=[0.08]) ### Set turbuelence intensity here 
+    fi.calculate_wake()
+    #Diameter and Rated power based on the wind farm
+    D = kf["t_rd"]
+    P_r = kf["t_cap"]
+    hub_h = kf["t_hh"]
+    
+    C_p_rated = 0.43003137
+    C_t_rated = 0.70701647
+    
+    #Normalized wind speed for any turbine
+    tf= pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/NREL_5MW_reference')
+    
+    ## Enumerate so for each turbine 
+    for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
+            turbine.rotor_diameter = D.iloc[count]
+            turbine.hub_height = hub_h.iloc[count]
+            T_Area = (np.pi* (D.iloc[count]**2)) /4
+            U_turb_rated= (2* P_r.iloc[count]*(10**3)/ (C_p_rated * 1.225* T_Area))**(1/3)
+            U_turb_norm =  tf.iloc[:,0] / U_turb_rated
+            cp_new = cturb.cp_for_any_turb(U_turb_norm,U_turb_rated,T_Area,P_r.iloc[count],tf)
+            ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
+            turbine.power_thrust_table["power"] = cp_new
+            turbine.power_thrust_table["thrust"] = ct_new
+            turbine.change_turbine_parameters({})
+    for count, coord in enumerate(fi.floris.farm.flow_field.turbine_map.coords):
+        coord.x3 = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    fi.floris.farm.flow_field.specified_wind_height = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    
+    
+    
+    for turb in range(len(fi.floris.farm.flow_field.turbine_map.turbines)):
+        turbine_id = fi.floris.farm.flow_field.turbine_map.turbines[turb]
+        turbine_val = []
+        for i in range(len(df_opt['wd'])):
+            turbine_yaw = df_opt['yaw_angles'][i][turb]
+            freq = df['freq_val'][i]
+            product = abs(turbine_yaw * freq)
+            turbine_val.append(product)
+            every_turbine_case = every_turbine_case.append(pd.DataFrame({'Farm Name': farm,
+                                                                       'yaw': turbine_yaw}, 
+                                                         index=[0]), ignore_index=True)
+            
+        #total_for_turbine = sum(turbine_val)
+        #overall_second_case = overall_second_case.append(pd.DataFrame({'Farm Name': farm,
+        #                                                               'weighted_yaw': total_for_turbine}, 
+        #                                                 index=[0]), ignore_index=True)
+    
+    #avg_farm = overall_second_case['weighted_yaw'].mean()
+    #average_every_farm = average_every_farm.append(pd.DataFrame({'Farm Name': farm,
+     #                                                                  'average_yaw': avg_farm}, 
+      #                                                   index=[0]), ignore_index=True)
+
+#### Look at distribution in wind roses 
+wind_rose = rose.WindRose()
+tf= pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/TI_8_farm_results')
+farm_list = tf['Farm Name']
+farm_standard_deviations_wd = pd.DataFrame([])
+for farm in farm_list:
+    
+    kf = farm
+    file_name = str(kf) + "_Wind_Farm.p"
+    df = wind_rose.load(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle_subset_no_ti/{}'.format(file_name))
+    wd_list = np.arange(0,360,5)
+    
+    wd_data = pd.DataFrame([])
+    for wd in wd_list:
+        case = df[df['wd'] == wd]
+        freq_sum = case['freq_val'].sum()
+        wd_data = wd_data.append(pd.DataFrame({'wd': wd,'freq': freq_sum}, 
+                                              index=[0]), ignore_index=True)
+    
+    wd_data_2 = pd.DataFrame([])
+    for case in range(len(wd_data)):
+        sin_wd = math.sin(math.radians(wd_data['wd'][case]))
+        cos_wd =  math.cos(math.radians(wd_data['wd'][case]))
+        sin_t_freq = sin_wd * wd_data['freq'][case]
+        cos_t_freq = cos_wd * wd_data['freq'][case]
+        wd_data_2 = wd_data_2.append(pd.DataFrame({'wd': wd_data['wd'][case],'sin_freq': sin_t_freq,
+                                                   'cos_freq':cos_t_freq}, 
+                                                    index=[0]), ignore_index=True)
+    
+    sum_sin = wd_data_2['sin_freq'].sum()
+    sum_cos = wd_data_2['cos_freq'].sum()
+    mean_rad = math.atan2(sum_sin, sum_cos)
+    mean_deg = math.degrees(mean_rad) + 90
+    if mean_deg < 0:
+        mean_deg = mean_deg + 360
+    
+    std_farms = pd.DataFrame([])
+    for case2 in range(len(wd_data)):
+        diff = (wd_data['wd'][case2] - mean_deg)**2
+        diff_freq = diff * wd_data['freq'][case2]
+    
+        std_farms = std_farms.append(pd.DataFrame({'wd': wd_data['wd'][case2],'diff_freq': diff_freq}, 
+                                                  index=[0]), ignore_index=True)
+    
+    std_farm = math.sqrt(std_farms['diff_freq'].sum())
+        
+    farm_standard_deviations_wd = farm_standard_deviations_wd.append(pd.DataFrame({'Farm Name': farm,
+                                                                                   'std_wd': std_farm}, 
+                                                                                    index=[0]), ignore_index=True)
+
+
+"""
+### Look at the fraction of time spent yawing for each case
+"""
+
+total_fraction_farm = pd.DataFrame([])
+wind_rose = rose.WindRose()
+tf= pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/TI_8_farm_results')
+farm_list = tf['Farm Name']
+for farm in farm_list:
+    ### First for every farm s
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+    fi = wfct.floris_interface.FlorisInterface(
+        os.path.join(file_dir, '../../example_input.json')
+    )
+    mf =pd.read_pickle('/home/dbensaso/WakeSteering_US/Working_dir_WS_US/Wind_US_Database')
+            
+    kf = (mf.loc[mf['p_name'] == farm])
+    wf_coordinate = [kf["ylat"].mean(),kf["xlong"].mean()]
+    
+    df_opt_pickle = "Df_opt_" + str(kf['p_name'].iloc[0]) + "_without_unc"
+    df_opt = pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Opt_pickle/{}'.format(df_opt_pickle))
+    
+    file_name = str(kf['p_name'].iloc[0]) + "_Wind_Farm.p"
+    df = wind_rose.load(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle_subset_no_ti/{}'.format(file_name))
+    
+    D = fi.floris.farm.turbines[0].rotor_diameter
+    lat_y = kf['ylat'].values
+    long_x = kf['xlong'].values
+    
+    layout_x, layout_y= nf.longlat_to_utm(lat_y, long_x)
+    #layout_x=layout_x1.tolist()
+    #layout_y=layout_y1.tolist()
+    
+    file_name = str(kf['p_name'].iloc[0]) + "_Wind_Farm.p"
+    df = wind_rose.load(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle_subset_no_ti/{}'.format(file_name))
+        
+    
+    N_turb = len(layout_x)
+    
+    fi.reinitialize_flow_field(layout_array=(layout_x, layout_y), wind_direction=[270.0],wind_speed=[8.0])
+    fi.reinitialize_flow_field(turbulence_intensity=[0.08]) ### Set turbuelence intensity here 
+    fi.calculate_wake()
+    #Diameter and Rated power based on the wind farm
+    D = kf["t_rd"]
+    P_r = kf["t_cap"]
+    hub_h = kf["t_hh"]
+    C_p_rated = 0.43003137
+    C_t_rated = 0.70701647
+    #Normalized wind speed for any turbine
+    tf= pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/NREL_5MW_reference')
+    
+    ## Enumerate so for each turbine 
+    for count, turbine in enumerate(fi.floris.farm.flow_field.turbine_map.turbines):
+            turbine.rotor_diameter = D.iloc[count]
+            turbine.hub_height = hub_h.iloc[count]
+            T_Area = (np.pi* (D.iloc[count]**2)) /4
+            U_turb_rated= (2* P_r.iloc[count]*(10**3)/ (C_p_rated * 1.225* T_Area))**(1/3)
+            U_turb_norm =  tf.iloc[:,0] / U_turb_rated
+            cp_new = cturb.cp_for_any_turb(U_turb_norm,U_turb_rated,T_Area,P_r.iloc[count],tf)
+            ct_new = cturb.ct_for_any_turb(U_turb_norm,tf)
+            turbine.power_thrust_table["power"] = cp_new
+            turbine.power_thrust_table["thrust"] = ct_new
+            turbine.change_turbine_parameters({})
+    for count, coord in enumerate(fi.floris.farm.flow_field.turbine_map.coords):
+        coord.x3 = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    fi.floris.farm.flow_field.specified_wind_height = fi.floris.farm.flow_field.turbine_map.turbines[0].hub_height
+    
+    fraction = pd.DataFrame([])
+    for turb in range(len(fi.floris.farm.flow_field.turbine_map.turbines)):
+        turbine_id = fi.floris.farm.flow_field.turbine_map.turbines[turb]
+        freq_yaw = []
+        for i in range(len(df_opt['wd'])):
+            turbine_yaw = df_opt['yaw_angles'][i][turb]
+            freq = df['freq_val'][i]
+            if abs(turbine_yaw) >=1:
+                freq_yaw.append(freq)
+        
+        total_turbine_yaw_freq = sum(freq_yaw) * 100
+        fraction = fraction.append(pd.DataFrame({'Farm Name': farm,
+                                                 'yaw_freq': total_turbine_yaw_freq}, 
+                                                index=[0]), ignore_index=True)
+    
+    total_fraction_farm = total_fraction_farm.append(fraction,ignore_index=True)
+
+"""
+fraction = pd.DataFrame([])
+tf= pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/TI_8_farm_results')
+farm_list = tf['Farm Name']
+for farm in farm_list:
+    ### First for every farm s
+    
+    #farm = 'Border Winds Project'        
+    
+    df_opt_pickle = "Df_opt_" + str(farm) + "_without_unc_TI_10"
+    df_opt = pd.read_pickle(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/Subset_2020/df_Opt_pickle_10/{}'.format(df_opt_pickle))
+    
+    file_name = str(farm) + "_Wind_Farm.p"
+    df = wind_rose.load(r'/home/dbensaso/floris/examples/optimization/scipy/Saved_Fig/wind_rose_pickle_subset_no_ti/{}'.format(file_name))
+    
+    df_opt['freq_val'] = df['freq_val']
+    #total_fraction_farm = total_fraction_farm.append(fraction,ignore_index=True)
+    yaw_cols = ['yaw_'+str(i) for i in range(len(df_opt['yaw_angles'][0]))]
+    df_opt[yaw_cols] = pd.DataFrame(df_opt.yaw_angles.tolist(), index= df_opt.index)
+    df_sub = df_opt[['freq_val']+yaw_cols]
+    df_sub = df_sub.melt(id_vars=['freq_val'])[['freq_val','value']]
+    df_sub['yaw_angle_round'] = df_sub.value.round()
+    df_sub['yaw_angle_round'] = abs(df_sub['yaw_angle_round'])
+    df_bin = df_sub.groupby('yaw_angle_round').sum()
+    df_bin = df_bin.drop(columns=['value'])
+    df_bin['yaw'] = df_bin.index
+    fraction = fraction.append(df_bin,ignore_index=True)
+
+df_final_10 = fraction.groupby('yaw').sum()
